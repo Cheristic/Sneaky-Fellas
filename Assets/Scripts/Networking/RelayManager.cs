@@ -61,10 +61,6 @@ public class RelayManager : NetworkBehaviour
 
             NetworkManager.Singleton.StartHost();
 
-            PlayerManager.Instance.InstatiatePlayers();
-
-            PlayerManager.Instance.AddPlayers();
-
 
             return joinCode;
         }
@@ -91,8 +87,6 @@ public class RelayManager : NetworkBehaviour
             NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
 
             NetworkManager.Singleton.StartClient();
-
-            PlayerManager.Instance.InstatiatePlayers();
 
         }
         catch (RelayServiceException e)

@@ -30,7 +30,32 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-    public void InstatiatePlayers()
+    //[ServerRpc(RequireOwnership = false)]
+    public void InstantiatePlayers()
+    {
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log("Player Id = " + clientId);
+        //m_NetworkManager.GetComponent<NetworkManager>().AddNetworkPrefab(playerPrefab);
+        NetworkManager.Singleton.GetComponent<NetworkManager>().NetworkConfig.PlayerPrefab = playerPrefab;
+
+        GameObject playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+        
+        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        
+        ulong objectId = playerInstance.GetComponent<NetworkObject>().NetworkObjectId;
+        Instance.PlayerData.Add(objectId, playerInstance);
+        InstantiatePlayersClientRpc(objectId);
+    }
+
+    [ClientRpc]
+    private void InstantiatePlayersClientRpc(ulong objectId)
+    {
+        Debug.Log("Player Id = " + objectId);
+        NetworkObject player = PlayerData[objectId].GetComponent<NetworkObject>();
+        GameObject playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+    }
+
+    /*public void InstatiatePlayers()
     {
         Debug.Log("Creating player0");
         var playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
@@ -91,6 +116,6 @@ public class PlayerManager : NetworkBehaviour
         //NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
 
         //Instance.PlayerData.Add(playerId, player.PlayerObject);
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId, true);*/
-    }
+        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId, true);
+    }*/
 }

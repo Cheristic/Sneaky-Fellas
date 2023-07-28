@@ -166,10 +166,11 @@ public class Matchmaking : NetworkBehaviour
                     {
                         Debug.Log("Client joining relay1. - " + PlayerId);
                         RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
-                        //PlayerManager.Instance.AddPlayerServerRpc();
                         updateText.text = "In game";
+                        if (IsClient) { PlayerManager.Instance.InstantiatePlayers(); }
 
                     }
+                    
 
                     joinedLobby = null;
 
@@ -295,9 +296,10 @@ public class Matchmaking : NetworkBehaviour
                     }
                 });
 
-                joinedLobby = lobby;
 
-                //PlayerManager.Instance.AddPlayerServerRpc(PlayerId);
+                if (IsClient) { PlayerManager.Instance.InstantiatePlayers(); }
+
+                joinedLobby = lobby;
 
                 updateText.text = "In game";
 
