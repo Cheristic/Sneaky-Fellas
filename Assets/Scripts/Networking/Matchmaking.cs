@@ -167,7 +167,6 @@ public class Matchmaking : NetworkBehaviour
                         Debug.Log("Client joining relay1. - " + PlayerId);
                         RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
                         updateText.text = "In game";
-                        if (IsClient) { PlayerManager.Instance.InstantiatePlayers(); }
 
                     }
                     
@@ -297,7 +296,7 @@ public class Matchmaking : NetworkBehaviour
                 });
 
 
-                if (IsClient) { PlayerManager.Instance.InstantiatePlayers(); }
+                
 
                 joinedLobby = lobby;
 
@@ -310,5 +309,12 @@ public class Matchmaking : NetworkBehaviour
             updateText.text = "Failed to start game.";
             }
         }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsClient) { PlayerManager.Instance.SpawnPlayersServerRpc(); }
+
+        base.OnNetworkSpawn();
     }
 }

@@ -10,9 +10,9 @@ public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance { get; private set; }
 
-    Dictionary<ulong, GameObject> playerdict;
+    //Dictionary<ulong, GameObject> playerdict;
 
-    public Dictionary<ulong, GameObject> PlayerData { get => playerdict; set => playerdict = value; }
+    //public NetworkVariable<Dictionary> PlayerData = new NetworkVariable<Dictionary>()<ulong, GameObject> { get => playerdict; set => playerdict = value; }
 
     [SerializeField] private GameObject playerPrefab;
 
@@ -30,92 +30,32 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-    //[ServerRpc(RequireOwnership = false)]
-    public void InstantiatePlayers()
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnPlayersServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        ulong clientId = serverRpcParams.Receive.SenderClientId;
+        SpawnPlayersClientRpc();
+        
+        //ulong objectId = playerInstance.GetComponent<NetworkObject>().NetworkObjectId;
+        //PlayerData.Add(objectId, playerInstance);
+        //InstantiatePlayersClientRpc(objectId);
+    }
+
+    [ClientRpc]
+    private void SpawnPlayersClientRpc(ClientRpcParams clientRpcParams = default)
     {
         ulong clientId = NetworkManager.Singleton.LocalClientId;
         Debug.Log("Player Id = " + clientId);
-        //m_NetworkManager.GetComponent<NetworkManager>().AddNetworkPrefab(playerPrefab);
-        NetworkManager.Singleton.GetComponent<NetworkManager>().NetworkConfig.PlayerPrefab = playerPrefab;
+        GameObject newPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
 
-        GameObject playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-        
-        ulong objectId = playerInstance.GetComponent<NetworkObject>().NetworkObjectId;
-        Instance.PlayerData.Add(objectId, playerInstance);
-        InstantiatePlayersClientRpc(objectId);
+        NetworkPrefab playerNetworkPrefab = new NetworkPrefab();
+        playerNetworkPrefab.Prefab = playerPrefab;
+
+        NetworkManager.Singleton.GetComponent<NetworkManager>().NetworkConfig.Prefabs.Add(playerNetworkPrefab);
+
+        newPlayer.SetActive(true);
+
+        newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
     }
 
-    [ClientRpc]
-    private void InstantiatePlayersClientRpc(ulong objectId)
-    {
-        Debug.Log("Player Id = " + objectId);
-        NetworkObject player = PlayerData[objectId].GetComponent<NetworkObject>();
-        GameObject playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-    }
-
-    /*public void InstatiatePlayers()
-    {
-        Debug.Log("Creating player0");
-        var playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        Debug.Log("Creating player1");
-
-        var playerId = NetworkManager.LocalClientId;
-        Debug.Log("Creating player2" + playerId);
-
-        PlayerData.Add(playerId, playerInstance);
-        Debug.Log("Creating player3");
-
-    }
-
-    public void AddPlayers()
-    {
-        Debug.Log("hoi0");
-        //var player = NetworkManager.ConnectedClients[playerId];
-
-
-        //var playerInstance = Instantiate(player.PlayerObject, Vector3.zero, Quaternion.identity);
-        //Debug.Log("hoi1 "  + player.ToString() + " " + playerID);
-        //var playerId = NetworkManager.LocalClientId;
-        //Debug.Log("hoi2 - " + playerId);
-
-        if (!IsServer) return;
-        Debug.Log("hoi3");
-
-        //Instance.Players.Add(player.ClientId, playerInstance);
-        ConnectClientsClientRpc();
-        //player.SetActive(true);
-        //NetworkManager.GetNetworkPrefabOverride(player);
-        //player.GetComponent<NetworkObject>().CheckObjectVisibility = playerID => { return true; };
-        //NetworkObject networkObject = player.GetComponent<NetworkObject>();
-        //var playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        //NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
-
-        //Instance.PlayerData.Add(playerId, player.PlayerObject);
-        //playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId, true);
-        //networkObject.SpawnAsPlayerObject(player, true);
-        Debug.Log("hoi4");
-
-    }
-    [ClientRpc]
-    private void ConnectClientsClientRpc()
-    {
-        if (IsOwner) return;
-
-        var playerId = NetworkManager.LocalClientId;
-
-        var playerInstance = Instance.PlayerData[playerId];
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId, true);
-
-        /*var playerId = NetworkManager.LocalClientId;
-        print("ID: " + playerId);
-        var player = NetworkManager.ConnectedClients[playerId].PlayerObject;
-
-        var playerInstance = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        //NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
-
-        //Instance.PlayerData.Add(playerId, player.PlayerObject);
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId, true);
-    }*/
 }
