@@ -13,6 +13,8 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Netcode;
 using Unity.Services.Relay.Models;
+using Unity.Collections;
+using UnityEngine.UI;
 
 public class Matchmaking : NetworkBehaviour
 {
@@ -28,12 +30,12 @@ public class Matchmaking : NetworkBehaviour
     public static event EventHandler OnJoinedLobbyUpdate;
     public static event EventHandler OnKickedFromLobby;
 
-    private NetworkVariable<string> hostPlayerId = new NetworkVariable<string>(null, NetworkVariableReadPermission.Everyone);
+    private NetworkVariable<FixedString64Bytes> hostPlayerId = new NetworkVariable<FixedString64Bytes>("", NetworkVariableReadPermission.Everyone);
 
 
     private void Start()
     {
-        
+
     }
 
     private void Update()
@@ -60,7 +62,6 @@ public class Matchmaking : NetworkBehaviour
 
         await Login();
 
-        //CreateLobby();
         CheckForLobbies();
 
     }
@@ -77,6 +78,7 @@ public class Matchmaking : NetworkBehaviour
     public static string PlayerId { get; private set; }
     public static async Task Login()
     {
+
         if (UnityServices.State == ServicesInitializationState.Uninitialized)
         {
             var options = new InitializationOptions();
@@ -84,12 +86,14 @@ public class Matchmaking : NetworkBehaviour
             await UnityServices.InitializeAsync(options);
         }
 
+        //AuthenticationService.Instance.ClearSessionToken();
+
         if (!AuthenticationService.Instance.IsSignedIn)
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
 
             PlayerId = AuthenticationService.Instance.PlayerId;
-
+        Debug.Log("Signed in player = " + PlayerId);
 
         }
     }
@@ -98,7 +102,6 @@ public class Matchmaking : NetworkBehaviour
     public string lobbyName = "Name";
 
     public const string KEY_START_GAME = "StartGame_RelayCode";
-
 
     public async void CreateLobby()
     {
@@ -120,7 +123,7 @@ public class Matchmaking : NetworkBehaviour
 
             joinedLobby = lobby;
 
-            updateText.text = "I am lobby host - " + lobby.LobbyCode;
+            updateText.text = "I am lobby host - " + lobby.LobbyCode + " - " + PlayerId;
         } 
         catch (LobbyServiceException e)
         {
@@ -144,6 +147,8 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
+    private bool gameStarted = false;
+
     private async void HandleLobbyPollForUpdates()
     {
         if (joinedLobby != null)
@@ -151,6 +156,7 @@ public class Matchmaking : NetworkBehaviour
             lobbyPollingTimer -= Time.deltaTime;
             if (lobbyPollingTimer < 0f)
             {
+                
                 float lobbyPollingTimerMax = 1.1f;
                 lobbyPollingTimer = lobbyPollingTimerMax;
                 joinedLobby = await Lobbies.Instance.GetLobbyAsync(joinedLobby.Id);
@@ -166,6 +172,7 @@ public class Matchmaking : NetworkBehaviour
                     {
                         Debug.Log("Client joining relay1. - " + PlayerId);
                         RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
+
                         updateText.text = "In game";
 
                     }
@@ -179,21 +186,25 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
-    private async void UpdatePlayerName(string newPlayerName)
+    public async void UpdatePlayerName(string newPlayerName)
     {
         try { 
             playerName = newPlayerName;
-            await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
+            if (joinedLobby != null)
             {
-                Data = new Dictionary<string, PlayerDataObject>
+                await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
+                {
+                    Data = new Dictionary<string, PlayerDataObject>
                         {
                             { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName) }
                         }
-            });
+                });
+            }
+            updateText.text = "Player name is now " + newPlayerName;
         } catch (LobbyServiceException e)
         {
             Debug.LogError(e);
-            updateText.text = "Failed to find lobbies.";
+            updateText.text = "Failed to change player name.";
         }
     }
 
@@ -246,7 +257,7 @@ public class Matchmaking : NetworkBehaviour
                 Player = GetPlayer()
             };
             joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
-            updateText.text = "Joined lobby with code: " + lobbyCode;  
+            updateText.text = "Joined lobby with code: " + lobbyCode + " - " + PlayerId;  
         } 
         catch (LobbyServiceException e)
         {
@@ -310,11 +321,41 @@ public class Matchmaking : NetworkBehaviour
             }
         }
     }
+    /*public override void OnNetworkSpawn()
+    {
 
+        //while ()
+        //{
+        //await Task.Yield();
+        Debug.Log("hey");
+        //}
+        PlayerManager.Instance.SpawnPlayersServerRpc();
+
+        base.OnNetworkSpawn();
+
+    }*/
+
+    [SerializeField] private Button goButton;
     public override void OnNetworkSpawn()
     {
-        if (IsClient) { PlayerManager.Instance.SpawnPlayersServerRpc(); }
+        //sgoButton.gameObject.SetActive(true);
+        //PlayerManager.Instance.SpawnPlayersServerRpc();
 
         base.OnNetworkSpawn();
     }
+
+    public void StartGameButtonGo()
+    {
+        if (IsHost)
+        {
+            Debug.Log("Connected players = " + NetworkManager.Singleton.ConnectedClientsList.Count);
+            gameStarted = true;
+            goButton.gameObject.SetActive(false);
+            foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+            {
+                //PlayerManager.Instance.SpawnPlayersServerRpc();
+            }
+        }
+    }
+
 }

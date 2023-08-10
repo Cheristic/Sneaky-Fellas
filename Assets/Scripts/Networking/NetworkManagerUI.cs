@@ -17,6 +17,7 @@ public class NetworkManagerUI : NetworkBehaviour
     [SerializeField] private Button respawnButton;
 
     [SerializeField] TMP_InputField lobbyCodeInputField;
+    [SerializeField] TMP_InputField playerNameInputField;
     [SerializeField] Matchmaking matchmaking;
 
 
@@ -33,10 +34,15 @@ public class NetworkManagerUI : NetworkBehaviour
         respawnButton.interactable = true;
     }
 
-    public void OnTextChange()
+    public void OnLobbyCodeTextChange()
     {
          matchmaking.PlayPrivate(lobbyCodeInputField.text);
 
+    }
+
+    public void OnPlayerNameTextChange()
+    {
+        matchmaking.UpdatePlayerName(playerNameInputField.text);
     }
 
 }

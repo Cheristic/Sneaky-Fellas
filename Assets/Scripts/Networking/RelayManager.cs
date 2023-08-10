@@ -50,16 +50,20 @@ public class RelayManager : NetworkBehaviour
             joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             updateText.text = "Creating Relay with Code: " + joinCode;
 
+
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
 
             _transport.SetRelayServerData(relayServerData);
 
-            NetworkManager.Singleton.ConnectionApprovalCallback = ConnectionApprovalCallback;
+            NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionApprovalCallback;
 
-            NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
+            //NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
+
 
 
             NetworkManager.Singleton.StartHost();
+
+            updateText.text = "Id: " + NetworkManager.Singleton.LocalClientId;
 
 
             return joinCode;
@@ -84,9 +88,11 @@ public class RelayManager : NetworkBehaviour
 
             _transport.SetRelayServerData(relayServerData);
 
-            NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
+            //NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
 
             NetworkManager.Singleton.StartClient();
+
+            updateText.text = "Id: " + NetworkManager.Singleton.LocalClientId;
 
         }
         catch (RelayServiceException e)
@@ -102,13 +108,13 @@ public class RelayManager : NetworkBehaviour
         Debug.Log("Connecting");
 
         response.Approved = true;
-        response.CreatePlayerObject = false;
-        response.PlayerPrefabHash = 1;
-
+        response.CreatePlayerObject = true;
         //response.Position;
         //response.Rotation;
         response.Pending = false;
 
     }
+
+
 
 }
