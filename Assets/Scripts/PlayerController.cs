@@ -7,7 +7,7 @@ public class PlayerController : NetworkBehaviour
 {
 
     [SerializeField] private float playerSpeed = 2.0f;
-    [SerializeField] private float rotateSpeed = 2.0f;
+    [SerializeField] private float rotateSpeed = 3.0f;
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private FieldOfView fovCircle;
 
@@ -53,10 +53,14 @@ public class PlayerController : NetworkBehaviour
     {
         //Mouse rotation
         var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
-        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        fieldOfView.SetAimDirection(dir);
-        fovCircle.SetAimDirection(dir);
+        var targetAngle = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
+        //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        Quaternion currentAngle = transform.rotation;
+        transform.rotation = Quaternion.Lerp(currentAngle, targetAngle, rotateSpeed * Time.deltaTime);
+        float finalAngle = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+        var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), dir.z);
+        fieldOfView.SetAimDirection(finalDir);
+        fovCircle.SetAimDirection(finalDir);
 
         //WASD rotation
         /*Vector2 moveDir = new Vector2(horizontal, vertical);

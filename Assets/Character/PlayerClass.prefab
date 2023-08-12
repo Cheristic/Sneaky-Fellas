@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpeed: 30
-  rotateSpeed: 800
+  rotateSpeed: 3
   fieldOfView: {fileID: 8762055998580309835}
   fovCircle: {fileID: 3325182549477447136}
   weaponParent: {fileID: 1248146997658298204}

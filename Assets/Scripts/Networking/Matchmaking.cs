@@ -335,25 +335,35 @@ public class Matchmaking : NetworkBehaviour
 
     }*/
 
-    [SerializeField] private Button goButton;
     public override void OnNetworkSpawn()
     {
-        //sgoButton.gameObject.SetActive(true);
-        //PlayerManager.Instance.SpawnPlayersServerRpc();
+        //SyncPlayerStartGame();
+        if (IsHost)
+        {
+            playerLobbyCount = joinedLobby.Players.Count;
+            StartCoroutine("SyncPlayerStartGame");
+        }
 
         base.OnNetworkSpawn();
     }
 
-    public void StartGameButtonGo()
+    private int playerLobbyCount;
+
+    IEnumerator SyncPlayerStartGame()
     {
-        if (IsHost)
+        if (!IsHost) yield return null;
+        for (; ; )
         {
-            Debug.Log("Connected players = " + NetworkManager.Singleton.ConnectedClientsList.Count);
-            gameStarted = true;
-            goButton.gameObject.SetActive(false);
-            foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+            if (NetworkManager.Singleton.ConnectedClients.Count < playerLobbyCount)
             {
-                //PlayerManager.Instance.SpawnPlayersServerRpc();
+                Debug.Log("Loading in players for relay..." + NetworkManager.Singleton.ConnectedClients.Count + "/" + playerLobbyCount);
+                yield return new WaitForSeconds(.1f);
+            }
+            else
+            {
+                PlayerManager.Instance.SpawnPlayersServerRpc();
+                StopCoroutine("SyncPlayerStartGame");
+                yield break;
             }
         }
     }

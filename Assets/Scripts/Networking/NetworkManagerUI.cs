@@ -12,7 +12,7 @@ public class NetworkManagerUI : NetworkBehaviour
     //[SerializeField] private TestRelay testRelay;
     [SerializeField] private TextMeshProUGUI playerCountText;
 
-    private NetworkVariable<int> playerNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
+    public NetworkVariable<int> playerNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
 
     [SerializeField] private Button respawnButton;
 
@@ -25,7 +25,7 @@ public class NetworkManagerUI : NetworkBehaviour
     {
         playerCountText.SetText("Players: " + playerNum.Value.ToString() + "/4");
 
-        if (!IsServer) return;
+        if (!IsHost) return;
         playerNum.Value = NetworkManager.Singleton.ConnectedClients.Count;
     }
 

@@ -108,7 +108,7 @@ public class RelayManager : NetworkBehaviour
         Debug.Log("Connecting");
 
         response.Approved = true;
-        response.CreatePlayerObject = true;
+        response.CreatePlayerObject = false;
         //response.Position;
         //response.Rotation;
         response.Pending = false;
