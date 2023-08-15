@@ -15,6 +15,7 @@ using Unity.Netcode;
 using Unity.Services.Relay.Models;
 using Unity.Collections;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class Matchmaking : NetworkBehaviour
 {
@@ -26,12 +27,15 @@ public class Matchmaking : NetworkBehaviour
     private float heartbeatTimer;
     private float lobbyPollingTimer;
 
-    public static event EventHandler OnGameStarted;
+    
+
+    public UnityEvent<GameObject> OnJoinLobby;
     public static event EventHandler OnJoinedLobbyUpdate;
     public static event EventHandler OnKickedFromLobby;
 
     private NetworkVariable<FixedString64Bytes> hostPlayerId = new NetworkVariable<FixedString64Bytes>("", NetworkVariableReadPermission.Everyone);
 
+    public static Matchmaking Instance { get; private set; }
 
     private void Start()
     {
@@ -103,6 +107,8 @@ public class Matchmaking : NetworkBehaviour
 
     public const string KEY_START_GAME = "StartGame_RelayCode";
 
+    [SerializeField] TextMeshProUGUI LobbyCodeUIText;
+    [SerializeField] Button StartGameButton;
     public async void CreateLobby()
     {
         updateText.text = "Creating Lobby...";
@@ -123,7 +129,9 @@ public class Matchmaking : NetworkBehaviour
 
             joinedLobby = lobby;
 
-            updateText.text = "I am lobby host - " + lobby.LobbyCode + " - " + PlayerId;
+            StartGameButton.gameObject.SetActive(true);
+
+            LobbyCodeUIText.text = lobby.LobbyCode;
         } 
         catch (LobbyServiceException e)
         {
@@ -147,37 +155,26 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
-    private bool gameStarted = false;
-
     private async void HandleLobbyPollForUpdates()
     {
         if (joinedLobby != null)
         {
+            float lobbyPollingTimerMax = 1.1f;
             lobbyPollingTimer -= Time.deltaTime;
             if (lobbyPollingTimer < 0f)
             {
-                
-                float lobbyPollingTimerMax = 1.1f;
                 lobbyPollingTimer = lobbyPollingTimerMax;
                 joinedLobby = await Lobbies.Instance.GetLobbyAsync(joinedLobby.Id);
 
-                Debug.Log("Client joining relay3.");
-
-
                 if (joinedLobby.Data[KEY_START_GAME].Value != "0")
                 {
-                    Debug.Log("Client joining relay2.");
-
                     if (PlayerId != hostPlayerId.Value)
                     {
-                        Debug.Log("Client joining relay1. - " + PlayerId);
                         RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
 
                         updateText.text = "In game";
 
                     }
-                    
-
                     joinedLobby = null;
 
                 }
@@ -186,6 +183,7 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
+    [SerializeField] TextMeshProUGUI PlayerNameUIText;
     public async void UpdatePlayerName(string newPlayerName)
     {
         try { 
@@ -200,7 +198,7 @@ public class Matchmaking : NetworkBehaviour
                         }
                 });
             }
-            updateText.text = "Player name is now " + newPlayerName;
+            PlayerNameUIText.text = "Name is "+newPlayerName+".";
         } catch (LobbyServiceException e)
         {
             Debug.LogError(e);
@@ -257,7 +255,8 @@ public class Matchmaking : NetworkBehaviour
                 Player = GetPlayer()
             };
             joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
-            updateText.text = "Joined lobby with code: " + lobbyCode + " - " + PlayerId;  
+            LobbyCodeUIText.text = lobbyCode;
+            OnJoinLobby?.Invoke(gameObject);
         } 
         catch (LobbyServiceException e)
         {
@@ -295,6 +294,7 @@ public class Matchmaking : NetworkBehaviour
             try
             {
                 updateText.text = "Starting game...";
+                Debug.Log("Starting game...");
 
                 string relayCode = await RelayManager.Instance.CreateRelay();
 
@@ -305,9 +305,6 @@ public class Matchmaking : NetworkBehaviour
                         {KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
                     }
                 });
-
-
-                
 
                 joinedLobby = lobby;
 
@@ -321,19 +318,6 @@ public class Matchmaking : NetworkBehaviour
             }
         }
     }
-    /*public override void OnNetworkSpawn()
-    {
-
-        //while ()
-        //{
-        //await Task.Yield();
-        Debug.Log("hey");
-        //}
-        PlayerManager.Instance.SpawnPlayersServerRpc();
-
-        base.OnNetworkSpawn();
-
-    }*/
 
     public override void OnNetworkSpawn()
     {
@@ -356,12 +340,12 @@ public class Matchmaking : NetworkBehaviour
         {
             if (NetworkManager.Singleton.ConnectedClients.Count < playerLobbyCount)
             {
-                Debug.Log("Loading in players for relay..." + NetworkManager.Singleton.ConnectedClients.Count + "/" + playerLobbyCount);
                 yield return new WaitForSeconds(.1f);
             }
             else
             {
                 PlayerManager.Instance.SpawnPlayersServerRpc();
+                
                 StopCoroutine("SyncPlayerStartGame");
                 yield break;
             }

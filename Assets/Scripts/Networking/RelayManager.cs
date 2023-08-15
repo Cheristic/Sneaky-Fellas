@@ -57,14 +57,8 @@ public class RelayManager : NetworkBehaviour
 
             NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionApprovalCallback;
 
-            //NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
-
-
 
             NetworkManager.Singleton.StartHost();
-
-            updateText.text = "Id: " + NetworkManager.Singleton.LocalClientId;
-
 
             return joinCode;
         }
@@ -88,11 +82,7 @@ public class RelayManager : NetworkBehaviour
 
             _transport.SetRelayServerData(relayServerData);
 
-            //NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("name"));
-
             NetworkManager.Singleton.StartClient();
-
-            updateText.text = "Id: " + NetworkManager.Singleton.LocalClientId;
 
         }
         catch (RelayServiceException e)
@@ -103,14 +93,9 @@ public class RelayManager : NetworkBehaviour
     private void ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         var clientId = request.ClientNetworkId;
-
         var connectionData = request.Payload;
-        Debug.Log("Connecting");
-
         response.Approved = true;
         response.CreatePlayerObject = false;
-        //response.Position;
-        //response.Rotation;
         response.Pending = false;
 
     }

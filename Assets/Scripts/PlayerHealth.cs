@@ -22,7 +22,6 @@ public class PlayerHealth : NetworkBehaviour
         currentHealth = healthValue;
         maxHealth = healthValue;
         isDead = false;
-        blackFilterObject = GameObject.FindWithTag("Black Filter");
     }
 
     public void GetHit(int dmg, GameObject sender)
@@ -38,19 +37,22 @@ public class PlayerHealth : NetworkBehaviour
             OnHitWithReference?.Invoke(sender);
         } else
         {
+            
             OnDeathWithReference?.Invoke(sender);
             isDead = true;
-            DespawnPlayerServerRpc();
             playerParent.SetActive(false);
-            blackFilterObject.SetActive(false);
+            PlayerDiesServerRpc();
             Destroy(playerParent);
             currentHealth = maxHealth;
+
+            
         }
     }
-
     [ServerRpc(RequireOwnership = false)]
-    private void DespawnPlayerServerRpc()
+    private void PlayerDiesServerRpc()
     {
+        PlayerManager.Instance.networkPlayersSpawned.Remove(playerParent);
         playerParent.GetComponent<NetworkObject>().Despawn();
+
     }
 }

@@ -5,12 +5,15 @@ using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
 using Unity.Services.Lobbies;
+using UnityEngine.Events;
 
 
 public class NetworkManagerUI : NetworkBehaviour
 {
     //[SerializeField] private TestRelay testRelay;
     [SerializeField] private TextMeshProUGUI playerCountText;
+
+    public static NetworkManagerUI Instance { get; private set; }
 
     public NetworkVariable<int> playerNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
 
@@ -20,7 +23,19 @@ public class NetworkManagerUI : NetworkBehaviour
     [SerializeField] TMP_InputField playerNameInputField;
     [SerializeField] Matchmaking matchmaking;
 
-
+    public UnityEvent<GameObject> OnHitStartGameButton;
+    private void Start()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Update()
     {
         playerCountText.SetText("Players: " + playerNum.Value.ToString() + "/4");
@@ -31,7 +46,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
     public void EnableRespawn()
     {
-        respawnButton.interactable = true;
+        respawnButton.gameObject.SetActive(true);
     }
 
     public void OnLobbyCodeTextChange()
@@ -43,6 +58,19 @@ public class NetworkManagerUI : NetworkBehaviour
     public void OnPlayerNameTextChange()
     {
         matchmaking.UpdatePlayerName(playerNameInputField.text);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OnHitStartGameButtonServerRpc()
+    {
+        Debug.Log("hey");
+        OnHitStartGameButtonClientRpc();
+    }
+    [ClientRpc]
+    private void OnHitStartGameButtonClientRpc()
+    {
+        Debug.Log("hey");
+        OnHitStartGameButton.Invoke(gameObject);
     }
 
 }

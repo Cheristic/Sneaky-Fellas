@@ -43,7 +43,7 @@ public class KnifeWeaponParent : NetworkBehaviour
         Gizmos.DrawWireSphere(position, radius);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void DetectCollidersServerRpc()
     {
         foreach (Collider2D collider in Physics2D.OverlapCircleAll(circleOrigin.position, radius))
