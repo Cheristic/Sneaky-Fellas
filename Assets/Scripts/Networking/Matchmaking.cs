@@ -16,6 +16,7 @@ using Unity.Services.Relay.Models;
 using Unity.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class Matchmaking : NetworkBehaviour
 {
@@ -319,6 +320,8 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
+    private int playerLobbyCount;
+
     public override void OnNetworkSpawn()
     {
         //SyncPlayerStartGame();
@@ -331,7 +334,6 @@ public class Matchmaking : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
-    private int playerLobbyCount;
 
     IEnumerator SyncPlayerStartGame()
     {
@@ -344,12 +346,14 @@ public class Matchmaking : NetworkBehaviour
             }
             else
             {
-                PlayerManager.Instance.SpawnPlayersServerRpc();
-                
+                ProjectSceneManager.Instance.ChangeToMapScene();
+
                 StopCoroutine("SyncPlayerStartGame");
+                
                 yield break;
             }
         }
     }
+
 
 }

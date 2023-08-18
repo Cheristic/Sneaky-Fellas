@@ -14,7 +14,6 @@ public class PlayerManager : NetworkBehaviour
     public static PlayerManager Instance { get; private set; }
 
     [SerializeField] private GameObject playerClassPrefab;
-    [SerializeField] private GameObject inGameManagerToSpawn;
 
     public UnityEvent OnGameStarted;
 
@@ -53,8 +52,7 @@ public class PlayerManager : NetworkBehaviour
 
 
         }
-        GameObject inGameManager = Instantiate(inGameManagerToSpawn);
-        inGameManager.GetComponent<NetworkObject>().Spawn();
+        
 
         Debug.Log("Total players ="+NetworkManager.Singleton.ConnectedClientsIds.Count);
 
