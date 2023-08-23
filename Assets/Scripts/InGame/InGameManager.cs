@@ -10,15 +10,11 @@ public class InGameManager : NetworkBehaviour
     public static InGameManager Instance { get; private set; }
 
 
-    public override void OnNetworkSpawn()
+    public void Start()
     {
         if (IsServer)
         {
-
-            NetworkManager.Singleton.SceneManager.UnloadScene(SceneManager.GetSceneByName("MainMenu"));
-            SceneManager.UnloadSceneAsync(SceneManager.GetSceneByName("MainMenu"));
-            SceneManager.SetActiveScene(gameObject.scene);
-            PlayerManager.Instance.SpawnPlayersServerRpc();
+            PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
         }
     }
 }

@@ -51,7 +51,7 @@ public class PlayerHealth : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void PlayerDiesServerRpc()
     {
-        PlayerManager.Instance.networkPlayersSpawned.Remove(playerParent);
+        PlayerSpawnManager.Instance.networkPlayersSpawned.Remove(playerParent);
         playerParent.GetComponent<NetworkObject>().Despawn();
 
     }

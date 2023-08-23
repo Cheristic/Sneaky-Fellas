@@ -26,7 +26,7 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         transform.position = new Vector3(Random.Range(5f, -5f), 0, Random.Range(5f, -5f));
-        PlayerManager.Instance.OnGameStarted?.Invoke();
+        PlayerSpawnManager.Instance.OnGameStarted?.Invoke();
 
     }
     void Update()

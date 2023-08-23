@@ -55,11 +55,6 @@ public class NetworkManagerUI : NetworkBehaviour
 
     }
 
-    public void OnPlayerNameTextChange()
-    {
-        matchmaking.UpdatePlayerName(playerNameInputField.text);
-    }
-
     [ServerRpc(RequireOwnership = false)]
     public void OnHitStartGameButtonServerRpc()
     {

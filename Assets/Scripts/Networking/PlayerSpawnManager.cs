@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 
-public class PlayerManager : NetworkBehaviour
+public class PlayerSpawnManager : NetworkBehaviour
 {
-    public static PlayerManager Instance { get; private set; }
+    public static PlayerSpawnManager Instance { get; private set; }
 
     [SerializeField] private GameObject playerClassPrefab;
+    [SerializeField] private GameObject playerDisplay;
 
     public UnityEvent OnGameStarted;
 
@@ -21,7 +22,6 @@ public class PlayerManager : NetworkBehaviour
 
     void Start()
     {
-        Debug.Log("Starting Player Manager");
         if (Instance == null)
         {
             Instance = this;
@@ -91,6 +91,7 @@ public class PlayerManager : NetworkBehaviour
     private void PreloadDynamicNetworkPrefabs()
     {
         NetworkManager.Singleton.AddNetworkPrefab(playerClassPrefab);
+        NetworkManager.Singleton.AddNetworkPrefab(playerDisplay);
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
     }
 

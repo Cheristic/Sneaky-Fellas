@@ -26,8 +26,6 @@ public class ProjectSceneManager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
-        m_LoadedScene = SceneManager.GetActiveScene();
-        Debug.Log("Current scene is "+m_LoadedScene.name);
     }
     public bool SceneIsLoaded
     {
@@ -42,7 +40,7 @@ public class ProjectSceneManager : NetworkBehaviour
     }
     public void ChangeToMapScene()
     {
-        var status = NetworkManager.SceneManager.LoadScene(MapSceneToLoad, LoadSceneMode.Additive);
+        var status = NetworkManager.SceneManager.LoadScene(MapSceneToLoad, LoadSceneMode.Single);
         if (status != SceneEventProgressStatus.Started)
         {
             Debug.Log($"Failed to load {MapSceneToLoad}");
@@ -95,7 +93,7 @@ public class ProjectSceneManager : NetworkBehaviour
         {
             return;
         }
-        var status = NetworkManager.SceneManager.UnloadScene(m_LoadedScene);
+        var status = NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
     }
 
     public void UnloadSceneSelected(Scene sceneToUnload)
@@ -105,7 +103,7 @@ public class ProjectSceneManager : NetworkBehaviour
             Debug.Log("Failed to unload.");
             return;
         }
-        var status = NetworkManager.SceneManager.UnloadScene(sceneToUnload);
+        var status = NetworkManager.Singleton.SceneManager.UnloadScene(sceneToUnload);
     }
 
 

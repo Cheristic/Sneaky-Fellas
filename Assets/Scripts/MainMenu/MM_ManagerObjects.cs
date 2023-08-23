@@ -13,7 +13,7 @@ public class MM_ManagerObjects : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else if (Instance != null)
+        else
         {
             Destroy(gameObject);
         }

@@ -21,8 +21,8 @@ using UnityEngine.SceneManagement;
 public class Matchmaking : NetworkBehaviour
 {
     public TextMeshProUGUI updateText;
-    private string playerName = null;
-    private Lobby joinedLobby;
+    public Lobby joinedLobby;
+    public MM_PlayerDisplay playerDisplay;
     //private RelayManager relayManager;
 
     private float heartbeatTimer;
@@ -40,7 +40,15 @@ public class Matchmaking : NetworkBehaviour
 
     private void Start()
     {
-
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Update()
@@ -105,8 +113,10 @@ public class Matchmaking : NetworkBehaviour
 
     public int maxPlayers = 4;
     public string lobbyName = "Name";
+    private string relayCode;
 
     public const string KEY_START_GAME = "StartGame_RelayCode";
+    public const string RELAY_CODE = "JoinLobby_RelayCode";
 
     [SerializeField] TextMeshProUGUI LobbyCodeUIText;
     [SerializeField] Button StartGameButton;
@@ -119,21 +129,36 @@ public class Matchmaking : NetworkBehaviour
             var options = new CreateLobbyOptions
             {
                 IsPrivate = true,
-                Player = GetPlayer(),
+                Player = new Player(),
                 Data = new Dictionary<string, DataObject>
                 {
-                    {KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }
+                    {KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }                 
                 }
             };
 
             var lobby = await Lobbies.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
 
+            LobbyCodeUIText.text = lobby.LobbyCode;
+
             joinedLobby = lobby;
+
+            updateText.text = "Lobby created";
+
+            relayCode = await RelayManager.Instance.CreateRelay();
+
+            options.Data.Add(RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayCode));
+            joinedLobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+            {
+                Data = options.Data
+            });
 
             StartGameButton.gameObject.SetActive(true);
 
-            LobbyCodeUIText.text = lobby.LobbyCode;
-        } 
+            //PlayerGameDatabase.Instance.AddPlayerToDatabase(NetworkManager.Singleton.LocalClientId, PlayerId);
+
+
+
+        }
         catch (LobbyServiceException e)
         {
             Debug.LogError(e);
@@ -171,7 +196,7 @@ public class Matchmaking : NetworkBehaviour
                 {
                     if (PlayerId != hostPlayerId.Value)
                     {
-                        RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
+                        //RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
 
                         updateText.text = "In game";
 
@@ -184,18 +209,18 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
-    [SerializeField] TextMeshProUGUI PlayerNameUIText;
+    /*[SerializeField] TextMeshProUGUI PlayerNameUIText;
     public async void UpdatePlayerName(string newPlayerName)
     {
         try { 
-            playerName = newPlayerName;
+            PlayerData.playerName = newPlayerName;
             if (joinedLobby != null)
             {
                 await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
                 {
                     Data = new Dictionary<string, PlayerDataObject>
                         {
-                            { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName) }
+                            { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, newPlayerName) }
                         }
                 });
             }
@@ -205,7 +230,7 @@ public class Matchmaking : NetworkBehaviour
             Debug.LogError(e);
             updateText.text = "Failed to change player name.";
         }
-    }
+    }*/
 
     public async void CheckForLobbies()
     {
@@ -253,29 +278,20 @@ public class Matchmaking : NetworkBehaviour
         {
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
             {
-                Player = GetPlayer()
+                Player = new Player()
             };
             joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
             LobbyCodeUIText.text = lobbyCode;
+            updateText.text = "Lobby joined";
             OnJoinLobby?.Invoke(gameObject);
+            RelayManager.Instance.JoinRelay(joinedLobby.Data[RELAY_CODE].Value);
+            //PlayerGameDatabase.Instance.AddPlayerToDatabase(NetworkManager.Singleton.LocalClientId, PlayerId);
         } 
         catch (LobbyServiceException e)
         {
             Debug.LogError(e);
             updateText.text = "Failed to join lobby.";
         }
-    }
-    
-
-    private Player GetPlayer()
-    {
-        return new Player
-        {
-            Data = new Dictionary<string, PlayerDataObject>
-                    {
-                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName) }
-                    }
-        };
     }
 
     private async void LeaveLobby()
@@ -297,7 +313,7 @@ public class Matchmaking : NetworkBehaviour
                 updateText.text = "Starting game...";
                 Debug.Log("Starting game...");
 
-                string relayCode = await RelayManager.Instance.CreateRelay();
+                //string relayCode = await RelayManager.Instance.CreateRelay();
 
                 Lobby lobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
                 {
@@ -308,6 +324,8 @@ public class Matchmaking : NetworkBehaviour
                 });
 
                 joinedLobby = lobby;
+
+                ProjectSceneManager.Instance.ChangeToMapScene();
 
                 updateText.text = "In game";
 
@@ -320,7 +338,7 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
-    private int playerLobbyCount;
+    /*private int playerLobbyCount;
 
     public override void OnNetworkSpawn()
     {
@@ -353,7 +371,7 @@ public class Matchmaking : NetworkBehaviour
                 yield break;
             }
         }
-    }
+    }*/
 
 
 }

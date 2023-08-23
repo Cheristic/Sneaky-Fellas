@@ -6,6 +6,6 @@ public class InGameUIManager : MonoBehaviour
 {
     public void OnHitRespawnButton()
     {
-        PlayerManager.Instance.RespawnPlayersServerRpc();
+        PlayerSpawnManager.Instance.RespawnPlayersServerRpc();
     }
 }
