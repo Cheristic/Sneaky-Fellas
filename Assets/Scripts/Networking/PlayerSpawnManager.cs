@@ -8,7 +8,9 @@ using Unity.Networking;
 using System.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
+using System.Threading;
+using System.Linq;
 public class PlayerSpawnManager : NetworkBehaviour
 {
     public static PlayerSpawnManager Instance { get; private set; }
@@ -20,6 +22,8 @@ public class PlayerSpawnManager : NetworkBehaviour
 
     public NetworkList<NetworkObjectReference> networkPlayersSpawned = new NetworkList<NetworkObjectReference>();
 
+    private static System.Random rng = new System.Random();
+    List<Transform> shuffledSpawnPoints;
     void Start()
     {
         if (Instance == null)
@@ -32,18 +36,21 @@ public class PlayerSpawnManager : NetworkBehaviour
             Destroy(gameObject);
         }
         PreloadDynamicNetworkPrefabs();
-
     }
 
 
     [ServerRpc]
     public void SpawnPlayersServerRpc()
     {
+        ShuffleSpawnPoints();
 
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             GameObject newPlayer = Instantiate(playerClassPrefab, Vector3.zero, Quaternion.identity);
             Debug.Log("Spawning player for " + clientId);
+
+            var pos = shuffledSpawnPoints[(int)clientId].position;
+            newPlayer.transform.Find("Player").gameObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
 
             newPlayer.SetActive(true);
 
@@ -63,6 +70,8 @@ public class PlayerSpawnManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void RespawnPlayersServerRpc()
     {
+        ShuffleSpawnPoints();
+
         for(int i = networkPlayersSpawned.Count-1; i >= 0; i--)
         {
             GameObject alivePlayer = networkPlayersSpawned[i];
@@ -78,6 +87,9 @@ public class PlayerSpawnManager : NetworkBehaviour
             GameObject newPlayer = Instantiate(playerClassPrefab, Vector3.zero, Quaternion.identity);
             Debug.Log("Spawning player for " + clientId);
 
+            var pos = shuffledSpawnPoints[(int)clientId].position;
+            newPlayer.transform.Find("Player").gameObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
+
             newPlayer.SetActive(true);
 
             newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
@@ -88,10 +100,21 @@ public class PlayerSpawnManager : NetworkBehaviour
 
     }
 
+    private void ShuffleSpawnPoints()
+    {
+        shuffledSpawnPoints = new List<Transform>();
+
+        Transform spawnPointParent = GameObject.FindGameObjectWithTag("Spawn Point Parent").transform;
+        foreach (Transform child in spawnPointParent)
+        {
+            shuffledSpawnPoints.Add(child);
+        }
+        shuffledSpawnPoints = shuffledSpawnPoints.OrderBy(x => rng.Next()).ToList();
+    }
+
     private void PreloadDynamicNetworkPrefabs()
     {
         NetworkManager.Singleton.AddNetworkPrefab(playerClassPrefab);
-        NetworkManager.Singleton.AddNetworkPrefab(playerDisplay);
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
     }
 
