@@ -13,13 +13,24 @@ public class KnifeWeaponParent : NetworkBehaviour
     [SerializeField] Transform circleOrigin;
     [SerializeField] float radius;
 
-    private void Update()
+
+    void Start()
     {
         if (!IsOwner)
         {
             transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("BehindMask");
             return;
         }
+    }
+
+    private void Update()
+    {
+        if (!IsOwner) return;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+
     }
 
     public void PlayerAttack()
@@ -55,15 +66,4 @@ public class KnifeWeaponParent : NetworkBehaviour
             }
         }
     }
-
-    /*[ServerRpc]
-    private void DetermineHitServerRpc()
-    {
-
-    }
-
-    struct PlayerHealthData : INetworkSerializable
-    {
-        public PlayerHealth
-    }*/
 }

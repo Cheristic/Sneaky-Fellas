@@ -118,7 +118,6 @@ public class PlayerGameDatabase : NetworkBehaviour
     }
 
 
-
     public void HandlePlayerGameListChanged(NetworkListEvent<PlayerData> changeEvent)
     {
         if (Matchmaking.Instance.joinedLobby != null) Matchmaking.Instance.playerDisplay.UpdatePlayerDisplay();

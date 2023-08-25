@@ -11,30 +11,39 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private FieldOfView fovCircle;
 
+    private ItemSlotManager itemSlotManager;
+
     private float horizontal, vertical;
     private float diagLimiter = 0.7f;
     private Rigidbody2D rb;
 
     [SerializeField] private KnifeWeaponParent weaponParent;
 
+    public delegate void PrimarySlot();
+    public static event PrimarySlot OnPrimarySlot;
+    public delegate void SecondarySlot();
+    public static event SecondarySlot OnSecondarySlot;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-    }
+        itemSlotManager = GetComponent<ItemSlotManager>();
 
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-        PlayerSpawnManager.Instance.OnGameStarted?.Invoke();
-
-    }
-    void Update()
-    {
         if (!IsOwner)
         {
             gameObject.layer = LayerMask.NameToLayer("BehindMask");
             return;
         }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        PlayerSpawnManager.Instance.OnGameStarted?.Invoke();
+
+    }
+    void Update()
+    {
+        if (!IsOwner) return;
         HandleMovement();
         HandleRotation();
         HandleAttack();
@@ -60,8 +69,6 @@ public class PlayerController : NetworkBehaviour
         var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), dir.z);
         fieldOfView.SetAimDirection(finalDir);
         fovCircle.SetAimDirection(finalDir);
-
-
     }
 
     private void FixedUpdate()
@@ -72,7 +79,6 @@ public class PlayerController : NetworkBehaviour
             horizontal *= diagLimiter;
             vertical *= diagLimiter;
         }
-
         rb.velocity = new Vector2(horizontal * playerSpeed, vertical * playerSpeed);
     }
 
@@ -80,7 +86,12 @@ public class PlayerController : NetworkBehaviour
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            weaponParent.PlayerAttack();
+            itemSlotManager.primaryWeaponSlot.Use();
+            //weaponParent.PlayerAttack();
+        }
+        if (Input.GetButtonDown("Fire2"))
+        {
+            itemSlotManager.secondaryPickupSlot.Use();
         }
     }
 }

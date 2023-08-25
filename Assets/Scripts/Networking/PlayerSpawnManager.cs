@@ -20,7 +20,7 @@ public class PlayerSpawnManager : NetworkBehaviour
 
     public UnityEvent OnGameStarted;
 
-    public NetworkList<NetworkObjectReference> networkPlayersSpawned = new NetworkList<NetworkObjectReference>();
+    public List<GameObject> networkPlayersSpawned = new();
 
     private static System.Random rng = new System.Random();
     List<Transform> shuffledSpawnPoints;
