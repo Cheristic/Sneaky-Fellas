@@ -4,9 +4,9 @@ using UnityEngine;
 using Unity.Netcode;
 
 [CreateAssetMenu(menuName = "new Item")]
-public abstract class ItemClass : MonoBehaviour
+public abstract class ItemClass : NetworkBehaviour
 {
-    [Header("Item")]
+    [Header("Item Attributes")]
     public string itemName;
     public Sprite droppedSprite;
     public Sprite pickedUpSprite;

@@ -35,7 +35,7 @@ public class PlayerSpawnManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
-        PreloadDynamicNetworkPrefabs();
+        PreloadPlayerDynamicNetworkPrefabs();
     }
 
 
@@ -71,8 +71,8 @@ public class PlayerSpawnManager : NetworkBehaviour
     public void RespawnPlayersServerRpc()
     {
         ShuffleSpawnPoints();
-        InGameManager.Instance.itemSpawnManager.DeleteSpawnedItemsServerRpc();
-        InGameManager.Instance.itemSpawnManager.SpawnItemsServerRpc();
+        ItemSpawnManager.Instance.DeleteSpawnedItemsServerRpc();
+        ItemSpawnManager.Instance.SpawnItemsServerRpc();
 
         for (int i = networkPlayersSpawned.Count-1; i >= 0; i--)
         {
@@ -119,10 +119,10 @@ public class PlayerSpawnManager : NetworkBehaviour
         return networkPlayersSpawned.IndexOf(go);
     }
 
-    private void PreloadDynamicNetworkPrefabs()
+    private void PreloadPlayerDynamicNetworkPrefabs()
     {
         NetworkManager.Singleton.AddNetworkPrefab(playerClassPrefab);
-        NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
+        NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
     }
 
 }

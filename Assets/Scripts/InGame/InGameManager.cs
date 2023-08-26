@@ -9,14 +9,11 @@ public class InGameManager : NetworkBehaviour
 {
     public static InGameManager Instance { get; private set; }
 
-    public ItemSpawnManager itemSpawnManager;
-
     public void Start()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else if (Instance != null)
         {
@@ -26,7 +23,7 @@ public class InGameManager : NetworkBehaviour
         if (IsServer)
         {
             PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
-            itemSpawnManager.SpawnItemsServerRpc();
+            ItemSpawnManager.Instance.SpawnItemsServerRpc();
         }
     }
 }
