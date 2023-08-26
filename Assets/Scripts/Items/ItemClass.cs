@@ -10,9 +10,25 @@ public abstract class ItemClass : MonoBehaviour
     public string itemName;
     public Sprite droppedSprite;
     public Sprite pickedUpSprite;
-    public GameObject objectInstance;
+    public bool pickedUp = false;
+    public ulong clientOwnerId;
+    public GameObject playerAttached;
 
-    public abstract void PickUp();
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Player" && !pickedUp)
+        {
+            Debug.Log("Can pick up");
+            if (Input.GetButtonDown("Fire1"))
+            {
+                Debug.Log("Picked up");
+                pickedUp = true;
+                playerAttached = other.gameObject;
+                GetComponent<CircleCollider2D>().enabled = false;
+                other.gameObject.GetComponent<ItemSlotManager>().PickUpItemServerRpc(this);
+            }
+        }
+    }
 
 
     public abstract void Use();

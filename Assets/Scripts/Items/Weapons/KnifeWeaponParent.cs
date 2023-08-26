@@ -59,10 +59,11 @@ public class KnifeWeaponParent : NetworkBehaviour
     {
         foreach (Collider2D collider in Physics2D.OverlapCircleAll(circleOrigin.position, radius))
         {
+            //if (collider.GetComponent<NetworkObject>().OwnerClientId == GetComponent<Knife_WC>().clientOwnerId) return;
             PlayerHealth health;
             if (health = collider.GetComponent<PlayerHealth>())
             {
-                health.GetHit(1, transform.parent.gameObject);
+                health.GetHit(1, GetComponent<ItemClass>().playerAttached);
             }
         }
     }

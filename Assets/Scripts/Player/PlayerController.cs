@@ -86,12 +86,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            itemSlotManager.primaryWeaponSlot.Use();
-            //weaponParent.PlayerAttack();
+            if (itemSlotManager.weaponInstance != null) itemSlotManager.weaponInstance.GetComponent<ItemClass>().Use();
         }
         if (Input.GetButtonDown("Fire2"))
         {
-            itemSlotManager.secondaryPickupSlot.Use();
+            if (itemSlotManager.pickupInstance != null) itemSlotManager.pickupInstance.GetComponent<ItemClass>().Use();
         }
     }
 }

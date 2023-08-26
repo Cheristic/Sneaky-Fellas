@@ -71,8 +71,10 @@ public class PlayerSpawnManager : NetworkBehaviour
     public void RespawnPlayersServerRpc()
     {
         ShuffleSpawnPoints();
+        InGameManager.Instance.itemSpawnManager.DeleteSpawnedItemsServerRpc();
+        InGameManager.Instance.itemSpawnManager.SpawnItemsServerRpc();
 
-        for(int i = networkPlayersSpawned.Count-1; i >= 0; i--)
+        for (int i = networkPlayersSpawned.Count-1; i >= 0; i--)
         {
             GameObject alivePlayer = networkPlayersSpawned[i];
             if (alivePlayer != null)
@@ -110,6 +112,11 @@ public class PlayerSpawnManager : NetworkBehaviour
             shuffledSpawnPoints.Add(child);
         }
         shuffledSpawnPoints = shuffledSpawnPoints.OrderBy(x => rng.Next()).ToList();
+    }
+
+    public int GetIdByPlayerObject(GameObject go)
+    {
+        return networkPlayersSpawned.IndexOf(go);
     }
 
     private void PreloadDynamicNetworkPrefabs()

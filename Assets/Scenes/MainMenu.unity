@@ -2598,6 +2598,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  networkPlayersSpawned: []
 --- !u!114 &1773226459
 MonoBehaviour:
   m_ObjectHideFlags: 0

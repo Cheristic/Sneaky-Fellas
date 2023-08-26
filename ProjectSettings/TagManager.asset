@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Black Filter
   - Spawn Point Parent
+  - Item
   layers:
   - Default
   - TransparentFX
