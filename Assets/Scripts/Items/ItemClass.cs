@@ -14,14 +14,14 @@ public abstract class ItemClass : NetworkBehaviour
     public ulong clientOwnerId;
     public GameObject playerAttached;
 
+    //Handle pick up collisions
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player" && !pickedUp)
         {
-            Debug.Log("Can pick up");
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButton("Jump"))
             {
-                Debug.Log("Picked up");
+                Debug.Log("Picked up " + itemName);
                 pickedUp = true;
                 playerAttached = other.gameObject;
                 GetComponent<CircleCollider2D>().enabled = false;
@@ -32,4 +32,5 @@ public abstract class ItemClass : NetworkBehaviour
 
 
     public abstract void Use();
+
 }

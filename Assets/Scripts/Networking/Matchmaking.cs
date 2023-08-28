@@ -209,29 +209,6 @@ public class Matchmaking : NetworkBehaviour
         }
     }
 
-    /*[SerializeField] TextMeshProUGUI PlayerNameUIText;
-    public async void UpdatePlayerName(string newPlayerName)
-    {
-        try { 
-            PlayerData.playerName = newPlayerName;
-            if (joinedLobby != null)
-            {
-                await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
-                {
-                    Data = new Dictionary<string, PlayerDataObject>
-                        {
-                            { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, newPlayerName) }
-                        }
-                });
-            }
-            PlayerNameUIText.text = "Name is "+newPlayerName+".";
-        } catch (LobbyServiceException e)
-        {
-            Debug.LogError(e);
-            updateText.text = "Failed to change player name.";
-        }
-    }*/
-
     public async void CheckForLobbies()
     {
         updateText.text = "Finding lobby...";
@@ -337,41 +314,5 @@ public class Matchmaking : NetworkBehaviour
             }
         }
     }
-
-    /*private int playerLobbyCount;
-
-    public override void OnNetworkSpawn()
-    {
-        //SyncPlayerStartGame();
-        if (IsHost)
-        {
-            playerLobbyCount = joinedLobby.Players.Count;
-            StartCoroutine("SyncPlayerStartGame");
-        }
-
-        base.OnNetworkSpawn();
-    }
-
-
-    IEnumerator SyncPlayerStartGame()
-    {
-        if (!IsHost) yield return null;
-        for (; ; )
-        {
-            if (NetworkManager.Singleton.ConnectedClients.Count < playerLobbyCount)
-            {
-                yield return new WaitForSeconds(.1f);
-            }
-            else
-            {
-                ProjectSceneManager.Instance.ChangeToMapScene();
-
-                StopCoroutine("SyncPlayerStartGame");
-                
-                yield break;
-            }
-        }
-    }*/
-
 
 }

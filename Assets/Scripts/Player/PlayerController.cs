@@ -11,18 +11,12 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private FieldOfView fovCircle;
 
-    private ItemSlotManager itemSlotManager;
-
     private float horizontal, vertical;
     private float diagLimiter = 0.7f;
     private Rigidbody2D rb;
 
-    [SerializeField] private KnifeWeaponParent weaponParent;
+    private ItemSlotManager itemSlotManager;
 
-    public delegate void PrimarySlot();
-    public static event PrimarySlot OnPrimarySlot;
-    public delegate void SecondarySlot();
-    public static event SecondarySlot OnSecondarySlot;
 
     private void Start()
     {
@@ -65,6 +59,8 @@ public class PlayerController : NetworkBehaviour
         var targetAngle = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
         Quaternion currentAngle = transform.rotation;
         transform.rotation = Quaternion.Lerp(currentAngle, targetAngle, rotateSpeed * Time.deltaTime);
+
+        // Handle adjusting FoV's
         float finalAngle = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
         var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), dir.z);
         fieldOfView.SetAimDirection(finalDir);
