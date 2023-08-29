@@ -11,6 +11,7 @@ public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
 
     public FixedString64Bytes PlayerName;
 
+
     public PlayerData(ulong clientId, string playerName)
     {
         ClientId = clientId;
@@ -21,6 +22,7 @@ public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
     {
         serializer.SerializeValue(ref ClientId);
         serializer.SerializeValue(ref PlayerName);
+
     }
 
     public bool Equals(PlayerData other)

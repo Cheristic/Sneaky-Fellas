@@ -33,7 +33,13 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         PlayerSpawnManager.Instance.OnGameStarted?.Invoke();
+        PlayerSpawnManager.Instance.networkPlayersSpawned.Add(GetComponentInParent<NetworkObject>());
 
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        PlayerSpawnManager.Instance.networkPlayersSpawned[(int)OwnerClientId] = null;
     }
     void Update()
     {
@@ -48,8 +54,9 @@ public class PlayerController : NetworkBehaviour
 
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
-        fieldOfView.SetOrigin(transform.position);
-        fovCircle.SetOrigin(transform.position);
+
+        fieldOfView.SetOrigin(new Vector3(transform.position.x, transform.position.y, 0));
+        fovCircle.SetOrigin(new Vector3(transform.position.x, transform.position.y, 0));
     }
 
     private void HandleRotation()

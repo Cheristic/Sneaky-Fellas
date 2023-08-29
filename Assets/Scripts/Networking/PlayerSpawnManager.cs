@@ -20,11 +20,13 @@ public class PlayerSpawnManager : NetworkBehaviour
 
     public UnityEvent OnGameStarted;
 
-    public List<GameObject> networkPlayersSpawned = new();
+    public List<NetworkObject> networkPlayersSpawned = new();
 
     private static System.Random rng = new System.Random();
     List<Transform> shuffledSpawnPoints;
-    void Start()
+
+
+    void Awake()
     {
         if (Instance == null)
         {
@@ -36,32 +38,22 @@ public class PlayerSpawnManager : NetworkBehaviour
             Destroy(gameObject);
         }
         PreloadPlayerDynamicNetworkPrefabs();
+
     }
 
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayersServerRpc()
     {
         ShuffleSpawnPoints();
 
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            GameObject newPlayer = Instantiate(playerClassPrefab, Vector3.zero, Quaternion.identity);
-            Debug.Log("Spawning player for " + clientId);
+        ItemSpawnManager.Instance.SpawnItemsServerRpc();
 
-            var pos = shuffledSpawnPoints[(int)clientId].position;
-            newPlayer.transform.Find("Player").gameObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
+        SpawnPlayers();
 
-            newPlayer.SetActive(true);
+        Debug.Log("Players spawned are " + string.Join(", ", networkPlayersSpawned));
 
-            newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-            networkPlayersSpawned.Add(newPlayer);
-
-
-        }
-        
-
-        Debug.Log("Total players ="+NetworkManager.Singleton.ConnectedClientsIds.Count);
+        InGameManager.Instance.StartCameraFollowClientRpc();
 
     }
 
@@ -76,14 +68,31 @@ public class PlayerSpawnManager : NetworkBehaviour
 
         for (int i = networkPlayersSpawned.Count-1; i >= 0; i--)
         {
-            GameObject alivePlayer = networkPlayersSpawned[i];
-            if (alivePlayer != null)
+            if (networkPlayersSpawned[i] is not null)
             {
-                networkPlayersSpawned.Remove(alivePlayer);
+                GameObject alivePlayer = networkPlayersSpawned[i].gameObject;
                 alivePlayer.GetComponent<NetworkObject>().Despawn();
                 Destroy(alivePlayer);
             }
         }
+        ResetNetworkPlayersSpawnedListClientRpc();
+
+        SpawnPlayers();
+
+        Debug.Log("Players spawned are " + string.Join(", ", networkPlayersSpawned));
+
+        InGameManager.Instance.StartCameraFollowClientRpc();
+    }
+
+    [ClientRpc]
+    private void ResetNetworkPlayersSpawnedListClientRpc()
+    {
+        networkPlayersSpawned = new();
+    }
+
+
+    private void SpawnPlayers()
+    {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             GameObject newPlayer = Instantiate(playerClassPrefab, Vector3.zero, Quaternion.identity);
@@ -95,12 +104,9 @@ public class PlayerSpawnManager : NetworkBehaviour
             newPlayer.SetActive(true);
 
             newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-            networkPlayersSpawned.Add(newPlayer);
-
         }
-        Debug.Log("Total players =" + NetworkManager.Singleton.ConnectedClientsIds.Count);
-
     }
+
 
     private void ShuffleSpawnPoints()
     {
@@ -116,13 +122,15 @@ public class PlayerSpawnManager : NetworkBehaviour
 
     public int GetIdByPlayerObject(GameObject go)
     {
-        return networkPlayersSpawned.IndexOf(go);
+        return networkPlayersSpawned.IndexOf(go.GetComponentInParent<NetworkObject>());
     }
+
 
     private void PreloadPlayerDynamicNetworkPrefabs()
     {
         NetworkManager.Singleton.AddNetworkPrefab(playerClassPrefab);
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
     }
+
 
 }

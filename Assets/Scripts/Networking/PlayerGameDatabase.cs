@@ -122,4 +122,5 @@ public class PlayerGameDatabase : NetworkBehaviour
     {
         if (Matchmaking.Instance.joinedLobby != null) Matchmaking.Instance.playerDisplay.UpdatePlayerDisplay();
     }
+
 }

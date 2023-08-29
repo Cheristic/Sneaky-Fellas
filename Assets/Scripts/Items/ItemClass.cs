@@ -12,7 +12,7 @@ public abstract class ItemClass : NetworkBehaviour
     public Sprite pickedUpSprite;
     public bool pickedUp = false;
     public ulong clientOwnerId;
-    public GameObject playerAttached;
+    public NetworkObject playerAttached;
 
     //Handle pick up collisions
     private void OnTriggerStay2D(Collider2D other)
@@ -23,13 +23,53 @@ public abstract class ItemClass : NetworkBehaviour
             {
                 Debug.Log("Picked up " + itemName);
                 pickedUp = true;
-                playerAttached = other.gameObject;
+                /*playerAttached = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)clientOwnerId];
+                pickedUp = true;
                 GetComponent<CircleCollider2D>().enabled = false;
-                other.gameObject.GetComponent<ItemSlotManager>().PickUpItemServerRpc(this);
+
+                if (GetType().IsSubclassOf(typeof(WeaponItemClass)))
+                {
+                    playerAttached.GetComponent<ItemSlotManager>().weaponInstance = this;
+                }
+                else
+                {
+                    playerAttached.GetComponent<ItemSlotManager>().pickupInstance = this;
+                }*/
+                PickUpItemServerRpc();
             }
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void PickUpItemServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        clientOwnerId = serverRpcParams.Receive.SenderClientId;
+        Debug.Log("Id is " + clientOwnerId);
+        GetComponent<NetworkObject>().ChangeOwnership(clientOwnerId);
+        
+        PickUpItemClientRpc(clientOwnerId);
+    }
+
+    [ClientRpc]
+    private void PickUpItemClientRpc(ulong clientId)
+    {
+        //if (NetworkManager.Singleton.LocalClientId == clientOwnerId) return;
+        clientOwnerId = clientId;
+        playerAttached = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)clientOwnerId];
+        Debug.Log("Player is " + playerAttached.OwnerClientId);
+        pickedUp = true;
+        GetComponent<CircleCollider2D>().enabled = false;
+
+        if (GetType().IsSubclassOf(typeof(WeaponItemClass)))
+        {
+            playerAttached.GetComponentInChildren<ItemSlotManager>().weaponInstance = this;
+        }
+        else
+        {
+            playerAttached.GetComponentInChildren<ItemSlotManager>().pickupInstance = this;
+        }
+
+    }
 
     public abstract void Use();
 

@@ -8,6 +8,7 @@ TagManager:
   - Spawn Point Parent
   - Item
   - Obstacle
+  - Background
   layers:
   - Default
   - TransparentFX

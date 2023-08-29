@@ -17,7 +17,7 @@ public class HandgunBullet : MonoBehaviour
         PlayerHealth health;
         if (health = collider.GetComponent<PlayerHealth>())
         {
-            health.GetHit(1, handgun.playerAttached);
+            health.GetHit(1, handgun.playerAttached.transform.GetChild(0).gameObject);
             Destroy(gameObject);
         }
         if (collider.gameObject.CompareTag("Obstacle")) { Destroy(gameObject); }

@@ -9,7 +9,10 @@ public class InGameManager : NetworkBehaviour
 {
     public static InGameManager Instance { get; private set; }
 
-    public void Start()
+    [SerializeField] private GameObject cameraObject;
+
+
+    void Start()
     {
         if (Instance == null)
         {
@@ -22,8 +25,28 @@ public class InGameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
-            ItemSpawnManager.Instance.SpawnItemsServerRpc();
+            StartCoroutine(DelaySpawn());
+        }
+      
+    }
+
+    private IEnumerator DelaySpawn()
+    {
+        yield return new WaitForSeconds(1f);
+        PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
+
+    }
+
+    [ClientRpc]
+    public void StartCameraFollowClientRpc()
+    {
+        if (IsClient)
+        {
+            var id = NetworkManager.Singleton.LocalClientId;
+            if (PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id] is not null)
+            {
+                cameraObject.GetComponent<CameraMovement>().playerToTrack = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id].transform.GetChild(0);
+            }
         }
     }
 }

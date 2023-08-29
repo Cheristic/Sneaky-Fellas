@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class ItemSlotManager : MonoBehaviour
+public class ItemSlotManager : NetworkBehaviour
 {
     public GameObject primaryWeaponSlot;
 
@@ -22,11 +22,17 @@ public class ItemSlotManager : MonoBehaviour
         pickupInstance = null;
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    /*[ServerRpc(RequireOwnership = false)]
     public void PickUpItemServerRpc(ItemClass item, ServerRpcParams serverRpcParams = default)
     {
         item.clientOwnerId = serverRpcParams.Receive.SenderClientId;
         item.GetComponent<NetworkObject>().ChangeOwnership(item.clientOwnerId);
+
+        item.playerAttached = gameObject;
+        item.pickedUp = true;
+        item.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+
+        Debug.Log(item.itemName);
         if (item.GetType().IsSubclassOf(typeof(WeaponItemClass))) 
         {
             weaponInstance = item;
@@ -34,7 +40,7 @@ public class ItemSlotManager : MonoBehaviour
         {
             pickupInstance = item;
         }
-    }
+    }*/
 
     private void Update()
     {

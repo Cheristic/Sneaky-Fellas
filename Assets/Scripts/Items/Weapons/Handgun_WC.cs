@@ -31,10 +31,16 @@ public class Handgun_WC : WeaponItemClass
         base.Use();
         if (ammoLeft == 0) return;
 
+        ShootServerRpc();
+
+        ammoLeft--;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ShootServerRpc()
+    {
         var bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         bullet.GetComponent<NetworkObject>().Spawn();
         bullet.GetComponent<HandgunBullet>().handgun = this;
-
-        ammoLeft--;
     }
 }

@@ -29,6 +29,7 @@ public class PlayerHealth : NetworkBehaviour
         if (isDead) return;
 
         if (sender.layer == gameObject.layer) return;
+        if (sender == gameObject) return;
 
         currentHealth -= dmg;
         
@@ -51,7 +52,6 @@ public class PlayerHealth : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void PlayerDiesServerRpc()
     {
-        PlayerSpawnManager.Instance.networkPlayersSpawned.Remove(playerParent);
         playerParent.GetComponent<NetworkObject>().Despawn();
 
     }

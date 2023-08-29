@@ -63,7 +63,7 @@ public class KnifeWeaponParent : NetworkBehaviour
             PlayerHealth health;
             if (health = collider.GetComponent<PlayerHealth>())
             {
-                health.GetHit(1, GetComponent<ItemClass>().playerAttached);
+                health.GetHit(1, GetComponent<ItemClass>().playerAttached.transform.GetChild(0).gameObject);
             }
         }
     }

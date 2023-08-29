@@ -28,7 +28,6 @@ public class FieldOfView : NetworkBehaviour
         if (!IsOwner) return;
 
         float angle = startingAngle;
-
         float angleIncrease = fov / rayCount;
 
         Vector3[] vertices = new Vector3[rayCount + 1 + 1];
