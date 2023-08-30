@@ -51,9 +51,7 @@ public class PlayerSpawnManager : NetworkBehaviour
 
         SpawnPlayers();
 
-        Debug.Log("Players spawned are " + string.Join(", ", networkPlayersSpawned));
-
-        InGameManager.Instance.StartCameraFollowClientRpc();
+        //InGameManager.Instance.StartCameraFollowClientRpc();
 
     }
 
@@ -79,9 +77,7 @@ public class PlayerSpawnManager : NetworkBehaviour
 
         SpawnPlayers();
 
-        Debug.Log("Players spawned are " + string.Join(", ", networkPlayersSpawned));
-
-        InGameManager.Instance.StartCameraFollowClientRpc();
+        //InGameManager.Instance.StartCameraFollowClientRpc();
     }
 
     [ClientRpc]

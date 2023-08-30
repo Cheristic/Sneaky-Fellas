@@ -60,13 +60,17 @@ public abstract class ItemClass : NetworkBehaviour
         pickedUp = true;
         GetComponent<CircleCollider2D>().enabled = false;
 
+        var p = playerAttached.GetComponentInChildren<ItemSlotManager>();
         if (GetType().IsSubclassOf(typeof(WeaponItemClass)))
         {
-            playerAttached.GetComponentInChildren<ItemSlotManager>().weaponInstance = this;
+            p.weaponInstance = this;
+            p.weaponInstance.GetComponent<NetworkObject>().TrySetParent(p.primaryWeaponSlot.transform, false);
+
         }
         else
         {
-            playerAttached.GetComponentInChildren<ItemSlotManager>().pickupInstance = this;
+            p.pickupInstance = this;
+            p.pickupInstance.GetComponent<NetworkObject>().TrySetParent(p.secondaryPickupSlot.transform, false);
         }
 
     }

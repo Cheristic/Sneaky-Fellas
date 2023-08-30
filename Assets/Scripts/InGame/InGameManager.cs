@@ -45,7 +45,8 @@ public class InGameManager : NetworkBehaviour
             var id = NetworkManager.Singleton.LocalClientId;
             if (PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id] is not null)
             {
-                cameraObject.GetComponent<CameraMovement>().playerToTrack = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id].transform.GetChild(0);
+                //Transform p = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id].transform.GetChild(0);
+                //cameraObject.GetComponent<CameraMovement>().playerToTrack = p.GetComponent<Rigidbody2D>();
             }
         }
     }
