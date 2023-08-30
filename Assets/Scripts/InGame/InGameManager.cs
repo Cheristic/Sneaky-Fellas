@@ -25,7 +25,8 @@ public class InGameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            StartCoroutine(DelaySpawn());
+            //StartCoroutine(DelaySpawn());
+            PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
         }
       
     }
@@ -35,19 +36,5 @@ public class InGameManager : NetworkBehaviour
         yield return new WaitForSeconds(1f);
         PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
 
-    }
-
-    [ClientRpc]
-    public void StartCameraFollowClientRpc()
-    {
-        if (IsClient)
-        {
-            var id = NetworkManager.Singleton.LocalClientId;
-            if (PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id] is not null)
-            {
-                //Transform p = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)id].transform.GetChild(0);
-                //cameraObject.GetComponent<CameraMovement>().playerToTrack = p.GetComponent<Rigidbody2D>();
-            }
-        }
     }
 }

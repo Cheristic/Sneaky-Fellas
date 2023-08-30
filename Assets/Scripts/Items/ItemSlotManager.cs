@@ -22,26 +22,6 @@ public class ItemSlotManager : NetworkBehaviour
         pickupInstance = null;
     }
 
-    /*[ServerRpc(RequireOwnership = false)]
-    public void PickUpItemServerRpc(ItemClass item, ServerRpcParams serverRpcParams = default)
-    {
-        item.clientOwnerId = serverRpcParams.Receive.SenderClientId;
-        item.GetComponent<NetworkObject>().ChangeOwnership(item.clientOwnerId);
-
-        item.playerAttached = gameObject;
-        item.pickedUp = true;
-        item.gameObject.GetComponent<CircleCollider2D>().enabled = false;
-
-        Debug.Log(item.itemName);
-        if (item.GetType().IsSubclassOf(typeof(WeaponItemClass))) 
-        {
-            weaponInstance = item;
-        } else
-        {
-            pickupInstance = item;
-        }
-    }*/
-
     private void Update()
     {
         if (weaponInstance != null)

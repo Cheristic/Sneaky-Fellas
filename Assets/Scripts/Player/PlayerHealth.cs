@@ -30,7 +30,7 @@ public class PlayerHealth : NetworkBehaviour
 
         if (sender.layer == gameObject.layer) return;
         if (sender == gameObject) return;
-
+        Debug.Log("Get hit by " + sender.name);
         currentHealth -= dmg;
         
         if (currentHealth > 0)

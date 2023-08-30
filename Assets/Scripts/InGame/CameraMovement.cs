@@ -13,7 +13,6 @@ public class CameraMovement : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        //cameraHolder.GetComponentInChildren<CinemachineBrain>().m_WorldUpOverride.rotation = new Quaternion(90, 0, 0, 0);
 
         if (IsOwner)
         {
@@ -31,7 +30,6 @@ public class CameraMovement : NetworkBehaviour
     {
         if (!IsOwner) return;
         cameraHolder.transform.position = new Vector3(playerToTrack.position.x, playerToTrack.position.y, cameraHolder.transform.position.z);
-        //cameraHolder.transform.rotation = new Quaternion(0, 0, 0, 0);
     }
 
 }

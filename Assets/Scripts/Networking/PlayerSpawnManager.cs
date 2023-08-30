@@ -51,8 +51,6 @@ public class PlayerSpawnManager : NetworkBehaviour
 
         SpawnPlayers();
 
-        //InGameManager.Instance.StartCameraFollowClientRpc();
-
     }
 
 
@@ -76,8 +74,6 @@ public class PlayerSpawnManager : NetworkBehaviour
         ResetNetworkPlayersSpawnedListClientRpc();
 
         SpawnPlayers();
-
-        //InGameManager.Instance.StartCameraFollowClientRpc();
     }
 
     [ClientRpc]

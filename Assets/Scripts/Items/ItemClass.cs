@@ -64,13 +64,13 @@ public abstract class ItemClass : NetworkBehaviour
         if (GetType().IsSubclassOf(typeof(WeaponItemClass)))
         {
             p.weaponInstance = this;
-            p.weaponInstance.GetComponent<NetworkObject>().TrySetParent(p.primaryWeaponSlot.transform, false);
+            //p.weaponInstance.GetComponent<NetworkObject>().TrySetParent(p.primaryWeaponSlot.transform, false);
 
         }
         else
         {
             p.pickupInstance = this;
-            p.pickupInstance.GetComponent<NetworkObject>().TrySetParent(p.secondaryPickupSlot.transform, false);
+            //p.pickupInstance.GetComponent<NetworkObject>().TrySetParent(p.secondaryPickupSlot.transform, false);
         }
 
     }
