@@ -16,7 +16,7 @@ public class Handgun_WC : WeaponItemClass
         itemName = "Handgun";
         if (!IsOwner)
         {
-            transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("BehindMask");
+            //transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("BehindMask");
             return;
         }
     }
@@ -36,11 +36,19 @@ public class Handgun_WC : WeaponItemClass
         ammoLeft--;
     }
 
+    GameObject bullet;
+
     [ServerRpc(RequireOwnership = false)]
     private void ShootServerRpc()
     {
-        var bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        bullet.GetComponent<NetworkObject>().Spawn();
+        ShootClientRpc();
+        SoundManager.Instance.SoundCreatedServerRpc("HandgunGunshot", firePoint.position);
         bullet.GetComponent<HandgunBullet>().handgun = this;
+    }
+
+    [ClientRpc]
+    private void ShootClientRpc()
+    {
+        bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
     }
 }

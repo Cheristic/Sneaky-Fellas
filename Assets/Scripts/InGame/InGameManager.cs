@@ -25,15 +25,14 @@ public class InGameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            //StartCoroutine(DelaySpawn());
-            PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
+            StartCoroutine(DelaySpawn());
         }
       
     }
 
     private IEnumerator DelaySpawn()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.2f);
         PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
 
     }

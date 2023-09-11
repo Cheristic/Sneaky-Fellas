@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1700624227686668421}
   - component: {fileID: 2715281305135515959}
   - component: {fileID: 7312658530127287351}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HandgunWeapon
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -133,9 +133,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e21690749a895d478b11601e14e2b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemName: 
-  droppedSprite: {fileID: 0}
-  pickedUpSprite: {fileID: 0}
+  itemName: Handgun
+  droppedSprite: {fileID: 21300000, guid: 14700851a631b3845afb0a66e0d5e998, type: 3}
+  holdingSprite: {fileID: 21300000, guid: 840136c7a68e857478955e2d53a185ad, type: 3}
   pickedUp: 0
   clientOwnerId: 0
   playerAttached: {fileID: 0}
@@ -249,13 +249,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 840136c7a68e857478955e2d53a185ad, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: 14700851a631b3845afb0a66e0d5e998, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 1.43}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

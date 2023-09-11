@@ -114,7 +114,13 @@ public class PlayerSpawnManager : NetworkBehaviour
 
     public int GetIdByPlayerObject(GameObject go)
     {
-        return networkPlayersSpawned.IndexOf(go.GetComponentInParent<NetworkObject>());
+        try
+        {
+            return networkPlayersSpawned.IndexOf(go.GetComponentInParent<NetworkObject>());
+        } catch
+        {
+            return -1;
+        }
     }
 
 

@@ -20,9 +20,9 @@ TagManager:
   - BehindMask
   - Obstacles
   - Black
+  - Items
   - Player
-  - 
-  - 
+  - InGameUI
   - 
   - 
   - 
@@ -48,6 +48,9 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: FOV
+    uniqueID: 1057739249
     locked: 0
   - name: UI
     uniqueID: 161974427

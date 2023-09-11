@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1700624227686668421}
   - component: {fileID: 4867146059439804231}
   - component: {fileID: 2715281305135515959}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: KnifeWeapon
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -116,8 +116,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemName: 
-  droppedSprite: {fileID: 0}
-  pickedUpSprite: {fileID: 0}
+  droppedSprite: {fileID: 21300000, guid: 1b7f48dcb0eeed04b8a2f352c578f4f2, type: 3}
+  holdingSprite: {fileID: 21300000, guid: 1b7f48dcb0eeed04b8a2f352c578f4f2, type: 3}
   pickedUp: 0
   clientOwnerId: 0
   playerAttached: {fileID: 0}
@@ -263,7 +263,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 1b7f48dcb0eeed04b8a2f352c578f4f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
