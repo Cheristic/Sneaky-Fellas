@@ -76,6 +76,7 @@ public class PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        if (!IsOwner) return;
         //Move player
         if (horizontal != 0 && vertical != 0)
         {
@@ -96,4 +97,6 @@ public class PlayerController : NetworkBehaviour
             if (itemSlotManager.pickupInstance != null) itemSlotManager.pickupInstance.GetComponent<ItemClass>().Use();
         }
     }
+
+
 }

@@ -11,6 +11,7 @@ public abstract class ItemClass : NetworkBehaviour
     public Sprite droppedSprite;
     public Sprite holdingSprite;
     public bool pickedUp = false;
+    public bool interactable = true;
     public ulong clientOwnerId;
     public NetworkObject playerAttached;
 
@@ -20,7 +21,7 @@ public abstract class ItemClass : NetworkBehaviour
     }
 
     //Handle pick up collisions
-    private void OnTriggerStay2D(Collider2D other)
+    /*private void OnTriggerStay2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player" && !pickedUp)
         {
@@ -29,14 +30,12 @@ public abstract class ItemClass : NetworkBehaviour
                 Debug.Log("Picked up " + itemName);
                 pickedUp = true;
                 PickUpItemServerRpc();
-                //transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("Items");
-
             }
         }
-    }
+    }*/
 
     [ServerRpc(RequireOwnership = false)]
-    private void PickUpItemServerRpc(ServerRpcParams serverRpcParams = default)
+    public void PickUpItemServerRpc(ServerRpcParams serverRpcParams = default)
     {
         clientOwnerId = serverRpcParams.Receive.SenderClientId;
         GetComponent<NetworkObject>().ChangeOwnership(clientOwnerId);
@@ -53,7 +52,8 @@ public abstract class ItemClass : NetworkBehaviour
         gameObject.GetComponentInChildren<SpriteRenderer>().sprite = holdingSprite;
 
         pickedUp = true;
-        GetComponent<CircleCollider2D>().enabled = false;
+        interactable = false;
+        //GetComponent<CircleCollider2D>().enabled = false;
         var p = playerAttached.GetComponentInChildren<ItemSlotManager>();
 
         if (GetType().IsSubclassOf(typeof(WeaponItemClass)))
@@ -91,7 +91,8 @@ public abstract class ItemClass : NetworkBehaviour
         itemToDrop.GetComponentInChildren<SpriteRenderer>().sprite = itemToDrop.droppedSprite;
 
         itemToDrop.pickedUp = false;
-        itemToDrop.GetComponent<CircleCollider2D>().enabled = true;
+        itemToDrop.interactable = true;
+        //itemToDrop.GetComponent<CircleCollider2D>().enabled = true;
 
         if (itemType == "weapon") itemSlots.weaponInstance = null;
         else itemSlots.pickupInstance = null;

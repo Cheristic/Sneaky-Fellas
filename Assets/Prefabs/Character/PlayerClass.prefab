@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1143897298439835713}
   - component: {fileID: 3195954089126391134}
   - component: {fileID: 201653634047743485}
+  - component: {fileID: 3286067792440712898}
   m_Layer: 11
   m_Name: Player
   m_TagString: Player
@@ -251,6 +252,19 @@ MonoBehaviour:
   secondaryPickupSlot: {fileID: 3023495239131207193}
   weaponInstance: {fileID: 0}
   pickupInstance: {fileID: 0}
+--- !u!114 &3286067792440712898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1345321327639384809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f9f90254687f9b4f8261337d3e1ae13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemsTouching: []
 --- !u!1 &1392246019926766474
 GameObject:
   m_ObjectHideFlags: 0
