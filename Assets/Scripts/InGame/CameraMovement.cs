@@ -7,7 +7,7 @@ using Cinemachine;
 
 public class CameraMovement : NetworkBehaviour
 {
-    [SerializeField] private Transform playerToTrack;
+    [SerializeField] private Transform targetToTrack;
     [SerializeField] private GameObject cameraHolder;
     [SerializeField] private CinemachineVirtualCamera vc;
 
@@ -20,7 +20,7 @@ public class CameraMovement : NetworkBehaviour
             vc.Priority = 10;
         } else
         {          
-            vc.Priority = 0;
+            vc.Priority = -1;
             cameraHolder.SetActive(false);
         }
     }
@@ -29,7 +29,7 @@ public class CameraMovement : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-        cameraHolder.transform.position = new Vector3(playerToTrack.position.x, playerToTrack.position.y, cameraHolder.transform.position.z);
+        cameraHolder.transform.position = new Vector3(targetToTrack.position.x, targetToTrack.position.y, cameraHolder.transform.position.z);
     }
 
 }

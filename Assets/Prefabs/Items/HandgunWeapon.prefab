@@ -137,6 +137,7 @@ MonoBehaviour:
   droppedSprite: {fileID: 21300000, guid: 14700851a631b3845afb0a66e0d5e998, type: 3}
   holdingSprite: {fileID: 21300000, guid: 840136c7a68e857478955e2d53a185ad, type: 3}
   pickedUp: 0
+  interactable: 1
   clientOwnerId: 0
   playerAttached: {fileID: 0}
   firePoint: {fileID: 7488050198220477901}
@@ -255,7 +256,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 1.43}
+  m_Size: {x: 2, y: 0.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

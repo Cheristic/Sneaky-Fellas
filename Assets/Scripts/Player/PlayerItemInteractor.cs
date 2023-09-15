@@ -56,7 +56,7 @@ public class PlayerItemInteractor : NetworkBehaviour
         // If player is touching items
         if (interactableItem != null)
         {
-            if (Input.GetButton("Jump"))
+            if (Input.GetButton("Interact"))
             {
                 ItemClass item = interactableItem;
                 interactableItem = null;
