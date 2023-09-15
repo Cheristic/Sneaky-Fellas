@@ -110,6 +110,7 @@ MonoBehaviour:
   rotateSpeed: 3
   fieldOfView: {fileID: 8762055998580309835}
   fovCircle: {fileID: 3325182549477447136}
+  m: {fileID: -944628639613478452, guid: c3a30e199d6c7ab4284af91335bc0f4b, type: 3}
 --- !u!114 &7893446865541457461
 MonoBehaviour:
   m_ObjectHideFlags: 0

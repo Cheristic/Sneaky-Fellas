@@ -26,7 +26,6 @@ public class ItemSpawnManager : MonoBehaviour
     public GameObject[] itemSpawnPoints;
 
     public GameObject gunPrefab;
-    public GameObject gunSpawnPoint;
 
     public GameObject bulletPrefab;
 
@@ -35,12 +34,17 @@ public class ItemSpawnManager : MonoBehaviour
     {
         foreach (GameObject itemSpawnPoint in itemSpawnPoints)
         {
-            GameObject newItem = Instantiate(itemSpawnPrefab, itemSpawnPoint.transform.position, Quaternion.identity);
-            newItem.GetComponent<NetworkObject>().Spawn();
-            
+            if (Random.Range(0, 4) == 0)
+            {
+                GameObject newGun = Instantiate(gunPrefab, itemSpawnPoint.transform.position, Quaternion.identity);
+                newGun.GetComponent<NetworkObject>().Spawn();
+            } else if (Random.Range(0, 2) == 0)
+            {
+                GameObject newItem = Instantiate(itemSpawnPrefab, itemSpawnPoint.transform.position, Quaternion.identity);
+                newItem.GetComponent<NetworkObject>().Spawn();
+            }
+                     
         }
-        GameObject newGun = Instantiate(gunPrefab, gunSpawnPoint.transform.position, Quaternion.identity);
-        newGun.GetComponent<NetworkObject>().Spawn();
 
     }
 

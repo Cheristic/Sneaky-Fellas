@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour
 {
-
+    [Header("Attributes")]
     [SerializeField] private float playerSpeed = 2.0f;
     [SerializeField] private float rotateSpeed = 3.0f;
+    [SerializeField] private float dropHoldTime = 0.5f;
+    [Header("Links")]
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private FieldOfView fovCircle;
 
@@ -16,7 +19,7 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody2D rb;
 
     private ItemSlotManager itemSlotManager;
-
+    private PlayerInputAction _input;
 
     private void Start()
     {
@@ -28,6 +31,22 @@ public class PlayerController : NetworkBehaviour
             gameObject.layer = LayerMask.NameToLayer("BehindMask");
             return;
         }
+
+        EnableInput();
+    }
+
+    private void EnableInput()
+    {
+        _input = new PlayerInputAction();
+        _input.Player.Enable();
+
+        _input.Player.Primary.performed += HandleAttack;
+        _input.Player.Secondary.performed += HandleAttack;
+
+        _input.Player.DropPrimary.started += HandleDropThrowHold;
+        _input.Player.DropSecondary.started += HandleDropThrowHold;
+        _input.Player.DropPrimary.performed += PerformDropThrow;
+        _input.Player.DropSecondary.performed += PerformDropThrow;
     }
 
     public override void OnNetworkSpawn()
@@ -46,12 +65,10 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner) return;
         HandleMovement();
         HandleRotation();
-        HandleAttack();
     }
 
     private void HandleMovement()
     {
-
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
 
@@ -86,15 +103,39 @@ public class PlayerController : NetworkBehaviour
         rb.velocity = new Vector2(horizontal * playerSpeed, vertical * playerSpeed);
     }
 
-    private void HandleAttack()
+    private void HandleAttack(InputAction.CallbackContext obj)
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (obj.duration >= dropHoldTime) return;
+        //Button is released before 0.5 seconds
+
+        if (obj.action == _input.Player.Primary)
         {
             if (itemSlotManager.weaponInstance != null) itemSlotManager.weaponInstance.GetComponent<ItemClass>().Use();
         }
-        if (Input.GetButtonDown("Fire2"))
+        if (obj.action == _input.Player.Secondary)
         {
             if (itemSlotManager.pickupInstance != null) itemSlotManager.pickupInstance.GetComponent<ItemClass>().Use();
+        }
+    }
+
+    private void HandleDropThrowHold(InputAction.CallbackContext obj)
+    {
+        if (obj.duration < dropHoldTime) return;
+        // Button is held for more than 0.5 seconds
+        
+    }
+
+    private void PerformDropThrow(InputAction.CallbackContext obj)
+    {
+        if (obj.duration < dropHoldTime) return;
+
+        if (obj.action == _input.Player.DropPrimary)
+        {
+            if (itemSlotManager.weaponInstance != null) itemSlotManager.weaponInstance.GetComponent<ItemClass>().DropItemServerRpc("weapon");
+        }
+        if (obj.action == _input.Player.DropSecondary)
+        {
+            if (itemSlotManager.pickupInstance != null) itemSlotManager.pickupInstance.GetComponent<ItemClass>().DropItemServerRpc("pickup");
         }
     }
 
