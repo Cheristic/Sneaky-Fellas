@@ -6,7 +6,7 @@ public class CameraTarget : MonoBehaviour
 {
     [SerializeField] Transform player;
     [SerializeField] float threshold;
-    [SerializeField] float distance;
+    [SerializeField] float distanceLimiter;
 
     // Update is called once per frame
     void Update()
@@ -16,10 +16,8 @@ public class CameraTarget : MonoBehaviour
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        Vector3 targetPos = player.position + finalDir.normalized * (Vector3.Distance(mousePos, player.position) / distance);
-
-        targetPos.x = Mathf.Clamp(targetPos.x, -threshold + player.position.x, threshold + player.position.x);
-        targetPos.y = Mathf.Clamp(targetPos.y, -threshold + player.position.y, threshold + player.position.y);
+        Vector3 targetPos = finalDir.normalized * (Vector2.Distance(mousePos, player.position) / distanceLimiter);
+        targetPos = Vector3.ClampMagnitude(targetPos, threshold) + player.position;
         targetPos.z = transform.position.z;
 
         transform.position = targetPos;

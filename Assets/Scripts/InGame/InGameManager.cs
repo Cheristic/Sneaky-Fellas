@@ -34,6 +34,5 @@ public class InGameManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(.2f);
         PlayerSpawnManager.Instance.SpawnPlayersServerRpc();
-
     }
 }

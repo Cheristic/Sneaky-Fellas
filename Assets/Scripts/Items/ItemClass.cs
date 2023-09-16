@@ -58,20 +58,20 @@ public abstract class ItemClass : NetworkBehaviour
 
         if (GetType().IsSubclassOf(typeof(WeaponItemClass)))
         {
-            if (p.weaponInstance) DropItemServerRpc("weapon");
+            if (p.weaponInstance) DropItemServerRpc("weapon", transform.position);
             p.weaponInstance = this;
 
         }
         else
         {
-            if (p.pickupInstance) DropItemServerRpc("pickup");
+            if (p.pickupInstance) DropItemServerRpc("pickup", transform.position);
             p.pickupInstance = this;
         }
 
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void DropItemServerRpc(string itemType, ServerRpcParams serverRpcParams = default)
+    public void DropItemServerRpc(string itemType, Vector3 dropPoint, ServerRpcParams serverRpcParams = default)
     {
         clientOwnerId = serverRpcParams.Receive.SenderClientId;
 
@@ -79,11 +79,11 @@ public abstract class ItemClass : NetworkBehaviour
         if (itemType == "weapon") p.weaponInstance.GetComponent<NetworkObject>().RemoveOwnership();
         else p.pickupInstance.GetComponent<NetworkObject>().RemoveOwnership();
 
-        DropItemClientRpc(itemType);
+        DropItemClientRpc(itemType, dropPoint);
     }
 
     [ClientRpc]
-    private void DropItemClientRpc(string itemType)
+    private void DropItemClientRpc(string itemType, Vector3 dropPoint)
     {
         var itemSlots = playerAttached.GetComponentInChildren<ItemSlotManager>();
 
@@ -92,10 +92,11 @@ public abstract class ItemClass : NetworkBehaviour
 
         itemToDrop.pickedUp = false;
         itemToDrop.interactable = true;
-        //itemToDrop.GetComponent<CircleCollider2D>().enabled = true;
 
         if (itemType == "weapon") itemSlots.weaponInstance = null;
         else itemSlots.pickupInstance = null;
+
+        itemToDrop.transform.position = dropPoint;
     }
 
     public abstract void Use();

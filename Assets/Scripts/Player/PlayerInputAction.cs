@@ -33,7 +33,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""id"": ""7f362412-0e96-41fa-b8da-c1af9141c219"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Tap(duration=0.5)"",
+                    ""interactions"": ""Press(behavior=1)"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -42,25 +42,25 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""id"": ""eefb6390-2723-4b48-b7f8-e365314fe615"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Tap(duration=0.5)"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""DropPrimary"",
-                    ""type"": ""Button"",
-                    ""id"": ""38ec0ac0-7ef1-4989-a99d-7ae2642d2ef6"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
                     ""interactions"": ""Press(behavior=1)"",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""DropSecondary"",
+                    ""name"": ""ThrowPrimary"",
                     ""type"": ""Button"",
-                    ""id"": ""2dbf4009-4d63-45fa-8b85-1fe0d3ea7de1"",
+                    ""id"": ""23c53aac-aec3-453c-9e9d-b2aec32c60b3"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Press(behavior=1)"",
+                    ""interactions"": ""Hold(duration=0.5)"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ThrowSecondary"",
+                    ""type"": ""Button"",
+                    ""id"": ""f78d14a3-459e-468b-9bc5-df6cd42fa2db"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.5)"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -119,50 +119,6 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""56359d51-8016-4bd7-a4af-884bf52f29dd"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DropPrimary"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""173d7b43-d5ca-4d12-a65a-bee8342f0092"",
-                    ""path"": ""<Gamepad>/buttonWest"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DropPrimary"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d1fd25af-d2c3-435a-851b-0d3af9ed8025"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DropSecondary"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""80c68810-9fbc-4e50-b8df-e4a983307540"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DropSecondary"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""WASD"",
                     ""id"": ""bd0904b3-9894-4713-bd14-ae67b0fd954c"",
                     ""path"": ""2DVector"",
@@ -216,6 +172,50 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dd8be3d1-2a3e-4567-ba86-64e1caffb1cb"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""81d1f7fa-1a61-4eb9-a44d-3349583f26f7"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a2ddb8e0-36ed-454a-bc94-b3b13d34d15b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowPrimary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""394174e6-dc8f-46c6-b25b-478e5c9252df"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowPrimary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -226,8 +226,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Primary = m_Player.FindAction("Primary", throwIfNotFound: true);
         m_Player_Secondary = m_Player.FindAction("Secondary", throwIfNotFound: true);
-        m_Player_DropPrimary = m_Player.FindAction("DropPrimary", throwIfNotFound: true);
-        m_Player_DropSecondary = m_Player.FindAction("DropSecondary", throwIfNotFound: true);
+        m_Player_ThrowPrimary = m_Player.FindAction("ThrowPrimary", throwIfNotFound: true);
+        m_Player_ThrowSecondary = m_Player.FindAction("ThrowSecondary", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
     }
 
@@ -292,8 +292,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Primary;
     private readonly InputAction m_Player_Secondary;
-    private readonly InputAction m_Player_DropPrimary;
-    private readonly InputAction m_Player_DropSecondary;
+    private readonly InputAction m_Player_ThrowPrimary;
+    private readonly InputAction m_Player_ThrowSecondary;
     private readonly InputAction m_Player_Move;
     public struct PlayerActions
     {
@@ -301,8 +301,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         public PlayerActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
         public InputAction @Primary => m_Wrapper.m_Player_Primary;
         public InputAction @Secondary => m_Wrapper.m_Player_Secondary;
-        public InputAction @DropPrimary => m_Wrapper.m_Player_DropPrimary;
-        public InputAction @DropSecondary => m_Wrapper.m_Player_DropSecondary;
+        public InputAction @ThrowPrimary => m_Wrapper.m_Player_ThrowPrimary;
+        public InputAction @ThrowSecondary => m_Wrapper.m_Player_ThrowSecondary;
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -319,12 +319,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Secondary.started += instance.OnSecondary;
             @Secondary.performed += instance.OnSecondary;
             @Secondary.canceled += instance.OnSecondary;
-            @DropPrimary.started += instance.OnDropPrimary;
-            @DropPrimary.performed += instance.OnDropPrimary;
-            @DropPrimary.canceled += instance.OnDropPrimary;
-            @DropSecondary.started += instance.OnDropSecondary;
-            @DropSecondary.performed += instance.OnDropSecondary;
-            @DropSecondary.canceled += instance.OnDropSecondary;
+            @ThrowPrimary.started += instance.OnThrowPrimary;
+            @ThrowPrimary.performed += instance.OnThrowPrimary;
+            @ThrowPrimary.canceled += instance.OnThrowPrimary;
+            @ThrowSecondary.started += instance.OnThrowSecondary;
+            @ThrowSecondary.performed += instance.OnThrowSecondary;
+            @ThrowSecondary.canceled += instance.OnThrowSecondary;
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
@@ -338,12 +338,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Secondary.started -= instance.OnSecondary;
             @Secondary.performed -= instance.OnSecondary;
             @Secondary.canceled -= instance.OnSecondary;
-            @DropPrimary.started -= instance.OnDropPrimary;
-            @DropPrimary.performed -= instance.OnDropPrimary;
-            @DropPrimary.canceled -= instance.OnDropPrimary;
-            @DropSecondary.started -= instance.OnDropSecondary;
-            @DropSecondary.performed -= instance.OnDropSecondary;
-            @DropSecondary.canceled -= instance.OnDropSecondary;
+            @ThrowPrimary.started -= instance.OnThrowPrimary;
+            @ThrowPrimary.performed -= instance.OnThrowPrimary;
+            @ThrowPrimary.canceled -= instance.OnThrowPrimary;
+            @ThrowSecondary.started -= instance.OnThrowSecondary;
+            @ThrowSecondary.performed -= instance.OnThrowSecondary;
+            @ThrowSecondary.canceled -= instance.OnThrowSecondary;
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
@@ -368,8 +368,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     {
         void OnPrimary(InputAction.CallbackContext context);
         void OnSecondary(InputAction.CallbackContext context);
-        void OnDropPrimary(InputAction.CallbackContext context);
-        void OnDropSecondary(InputAction.CallbackContext context);
+        void OnThrowPrimary(InputAction.CallbackContext context);
+        void OnThrowSecondary(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
     }
 }

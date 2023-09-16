@@ -20,11 +20,13 @@ public class PlayerController : NetworkBehaviour
 
     private ItemSlotManager itemSlotManager;
     private PlayerInputAction _input;
+    private ThrowItemInputHandler _throwItemInputHandler;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         itemSlotManager = GetComponent<ItemSlotManager>();
+        _throwItemInputHandler = transform.parent.GetComponentInChildren<ThrowItemInputHandler>();
 
         if (!IsOwner)
         {
@@ -40,13 +42,15 @@ public class PlayerController : NetworkBehaviour
         _input = new PlayerInputAction();
         _input.Player.Enable();
 
-        _input.Player.Primary.performed += HandleAttack;
-        _input.Player.Secondary.performed += HandleAttack;
+        _input.Player.Primary.performed += HandlePrimarySecondaryCheck;
+        _input.Player.Secondary.performed += HandlePrimarySecondaryCheck;
 
-        _input.Player.DropPrimary.started += HandleDropThrowHold;
-        _input.Player.DropSecondary.started += HandleDropThrowHold;
-        _input.Player.DropPrimary.performed += PerformDropThrow;
-        _input.Player.DropSecondary.performed += PerformDropThrow;
+        _throwItemInputHandler.dropHoldTime = dropHoldTime;
+        _input.Player.Primary.performed += _throwItemInputHandler.HandleThrowInput;
+        _input.Player.Secondary.performed += _throwItemInputHandler.HandleThrowInput;
+        _input.Player.ThrowPrimary.performed += _throwItemInputHandler.HandleStartThrowInput;
+        _input.Player.ThrowSecondary.performed += _throwItemInputHandler.HandleStartThrowInput;
+
     }
 
     public override void OnNetworkSpawn()
@@ -59,7 +63,14 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         PlayerSpawnManager.Instance.networkPlayersSpawned[(int)OwnerClientId] = null;
+        DisableInput();
     }
+
+    private void DisableInput()
+    {
+        _input.Player.Disable();
+    }
+
     void Update()
     {
         if (!IsOwner) return;
@@ -103,40 +114,32 @@ public class PlayerController : NetworkBehaviour
         rb.velocity = new Vector2(horizontal * playerSpeed, vertical * playerSpeed);
     }
 
-    private void HandleAttack(InputAction.CallbackContext obj)
+    private void HandlePrimarySecondaryCheck(InputAction.CallbackContext obj)
     {
-        if (obj.duration >= dropHoldTime) return;
-        //Button is released before 0.5 seconds
-
-        if (obj.action == _input.Player.Primary)
+        // Button is held for LESS than drop time
+        if (obj.duration < dropHoldTime)
         {
-            if (itemSlotManager.weaponInstance != null) itemSlotManager.weaponInstance.GetComponent<ItemClass>().Use();
-        }
-        if (obj.action == _input.Player.Secondary)
+            if (obj.action == _input.Player.Primary && itemSlotManager.weaponInstance != null)
+            {
+                itemSlotManager.weaponInstance.GetComponent<ItemClass>().Use();
+            }
+            if (obj.action == _input.Player.Secondary && itemSlotManager.pickupInstance != null)
+            {
+                itemSlotManager.pickupInstance.GetComponent<ItemClass>().Use();
+            }
+        } 
+        // Button is held for MORE than drop time
+        else
         {
-            if (itemSlotManager.pickupInstance != null) itemSlotManager.pickupInstance.GetComponent<ItemClass>().Use();
-        }
-    }
-
-    private void HandleDropThrowHold(InputAction.CallbackContext obj)
-    {
-        if (obj.duration < dropHoldTime) return;
-        // Button is held for more than 0.5 seconds
-        
-    }
-
-    private void PerformDropThrow(InputAction.CallbackContext obj)
-    {
-        if (obj.duration < dropHoldTime) return;
-
-        if (obj.action == _input.Player.DropPrimary)
-        {
-            if (itemSlotManager.weaponInstance != null) itemSlotManager.weaponInstance.GetComponent<ItemClass>().DropItemServerRpc("weapon");
-        }
-        if (obj.action == _input.Player.DropSecondary)
-        {
-            if (itemSlotManager.pickupInstance != null) itemSlotManager.pickupInstance.GetComponent<ItemClass>().DropItemServerRpc("pickup");
-        }
+            if (obj.action == _input.Player.Primary && itemSlotManager.weaponInstance != null)
+            {
+                itemSlotManager.weaponInstance.GetComponent<ItemClass>().DropItemServerRpc("weapon", _throwItemInputHandler.transform.position);
+            }
+            if (obj.action == _input.Player.Secondary && itemSlotManager.pickupInstance != null)
+            {
+                itemSlotManager.pickupInstance.GetComponent<ItemClass>().DropItemServerRpc("pickup", _throwItemInputHandler.transform.position);
+            }
+        }        
     }
 
 
