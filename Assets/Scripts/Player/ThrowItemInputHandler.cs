@@ -9,6 +9,7 @@ public class ThrowItemInputHandler : MonoBehaviour
     [SerializeField] float threshold;
     [SerializeField] float offset;
     [System.NonSerialized] public float dropHoldTime;
+    [SerializeField] LayerMask obstacleLayer;
 
     private bool isThrowing = false;
 
@@ -33,7 +34,19 @@ public class ThrowItemInputHandler : MonoBehaviour
         targetPos = ClampMagnitude(targetPos, threshold, offset);
         targetPos.z = 0;
 
-        transform.position = player.position + targetPos;
+        RaycastHit2D rayHit = Physics2D.Raycast(player.position, finalDir, targetPos.magnitude, obstacleLayer);
+        if (rayHit.collider == null)
+        {
+            //No hit
+            transform.position = player.position + targetPos;
+        }
+        else
+        {
+            //Hit
+            transform.position = new Vector3(rayHit.point.x, rayHit.point.y, player.position.z);
+        }
+
+        
     }
 
     public void HandleThrowInput(InputAction.CallbackContext obj)

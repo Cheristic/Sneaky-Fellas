@@ -26,7 +26,7 @@ public class ItemSlotManager : NetworkBehaviour
     {
         if (weaponInstance != null)
         {
-            weaponInstance.transform.position = rb.transform.position;
+            weaponInstance.transform.position = primaryWeaponSlot.transform.position;
             weaponInstance.transform.rotation = rb.transform.rotation;
         }
     }

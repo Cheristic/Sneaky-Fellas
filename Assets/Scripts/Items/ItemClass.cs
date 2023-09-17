@@ -68,6 +68,8 @@ public abstract class ItemClass : NetworkBehaviour
             p.pickupInstance = this;
         }
 
+        transform.GetChild(0).localPosition = transform.GetChild(1).localPosition;
+
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -97,6 +99,8 @@ public abstract class ItemClass : NetworkBehaviour
         else itemSlots.pickupInstance = null;
 
         itemToDrop.transform.position = dropPoint;
+
+        itemToDrop.transform.GetChild(0).localPosition = Vector3.zero;
     }
 
     public abstract void Use();
