@@ -100,7 +100,7 @@ public abstract class ItemClass : NetworkBehaviour
 
         itemToDrop.transform.position = dropPoint;
 
-        itemToDrop.transform.GetChild(0).localPosition = Vector3.zero;
+        itemToDrop.transform.GetChild(0).localPosition = transform.GetChild(2).localPosition;
     }
 
     public abstract void Use();

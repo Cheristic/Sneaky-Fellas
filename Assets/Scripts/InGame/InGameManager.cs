@@ -9,7 +9,8 @@ public class InGameManager : NetworkBehaviour
 {
     public static InGameManager Instance { get; private set; }
 
-    [SerializeField] private GameObject cameraObject;
+
+    public GameObject blackFilter;
 
 
     void Start()

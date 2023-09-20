@@ -58,17 +58,23 @@ public class PlayerController : NetworkBehaviour
         PlayerSpawnManager.Instance.OnGameStarted?.Invoke();
         PlayerSpawnManager.Instance.networkPlayersSpawned.Add(GetComponentInParent<NetworkObject>());
 
+        if (!IsOwner) return;
+        InGameManager.Instance.blackFilter.layer = LayerMask.NameToLayer("Black");
     }
 
     public override void OnNetworkDespawn()
     {
-        PlayerSpawnManager.Instance.networkPlayersSpawned[(int)OwnerClientId] = null;
         DisableInput();
+        PlayerSpawnManager.Instance.networkPlayersSpawned[(int)OwnerClientId] = null;
+        print((int)NetworkManager.Singleton.LocalClientId);
+
+        if (!IsOwner) return;
+        InGameManager.Instance.blackFilter.layer = LayerMask.NameToLayer("Mask");
     }
 
     private void DisableInput()
     {
-        _input.Player.Disable();
+        //_input.Player.Disable();
     }
 
     void Update()
