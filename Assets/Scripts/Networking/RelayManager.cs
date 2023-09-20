@@ -11,11 +11,12 @@ using Unity.Networking.Transport.Relay;
 using System.Threading.Tasks;
 using TMPro;
 using System.Text;
+using FishNet.Transporting.UTP;
 
 public class RelayManager : NetworkBehaviour
 {
     public string joinCode;
-    private static UnityTransport _transport;
+    private static FishyUnityTransport _transport;
     public TextMeshProUGUI updateText;
 
     public static RelayManager Instance { get; private set; }
@@ -23,7 +24,7 @@ public class RelayManager : NetworkBehaviour
     void Start()
     {
 
-        _transport = Object.FindObjectOfType<UnityTransport>();
+        _transport = Object.FindObjectOfType<FishyUnityTransport>();
 
         if (Instance == null)
         {

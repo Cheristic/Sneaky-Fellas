@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.alven.fishnet.unitytransport": {
+      "version": "https://github.com/ooonush/FishyUnityTransport.git?path=Assets/FishNet/Plugins/FishyUnityTransport",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.transport": "1.3.1"
+      },
+      "hash": "729ed05cbcc4239c606501fedb645f212844be4b"
+    },
     "com.unity.2d.animation": {
       "version": "9.0.3",
       "depth": 1,
