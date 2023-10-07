@@ -61,20 +61,19 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner) return;
         InGameManager.Instance.blackFilter.layer = LayerMask.NameToLayer("Black");
     }
-
     public override void OnNetworkDespawn()
     {
-        DisableInput();
         PlayerSpawnManager.Instance.networkPlayersSpawned[(int)OwnerClientId] = null;
         print((int)NetworkManager.Singleton.LocalClientId);
 
         if (!IsOwner) return;
+        DisableInput();
         InGameManager.Instance.blackFilter.layer = LayerMask.NameToLayer("Mask");
     }
 
     private void DisableInput()
     {
-        //_input.Player.Disable();
+        _input.Player.Disable();
     }
 
     void Update()
