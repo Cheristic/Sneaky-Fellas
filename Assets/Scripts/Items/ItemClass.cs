@@ -47,7 +47,7 @@ public abstract class ItemClass : NetworkBehaviour
     private void PickUpItemClientRpc(ulong clientId)
     {
         clientOwnerId = clientId;
-        playerAttached = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)clientOwnerId];
+        //playerAttached = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)clientOwnerId];
 
         gameObject.GetComponentInChildren<SpriteRenderer>().sprite = holdingSprite;
 

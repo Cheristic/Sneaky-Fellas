@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3195954089126391134}
   - component: {fileID: 201653634047743485}
   - component: {fileID: 3286067792440712898}
-  m_Layer: 11
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -111,6 +111,8 @@ MonoBehaviour:
   dropHoldTime: 0.5
   fieldOfView: {fileID: 8762055998580309835}
   fovCircle: {fileID: 3325182549477447136}
+  playerSpawned: {fileID: 0}
+  playerDied: {fileID: 0}
 --- !u!114 &7893446865541457461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -554,7 +556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4018748409465353873}
   - component: {fileID: 7472556177837905938}
-  m_Layer: 11
+  m_Layer: 7
   m_Name: PrimarySlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -616,7 +618,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5975166917756359272}
   - component: {fileID: 2799064457254949678}
-  m_Layer: 11
+  m_Layer: 7
   m_Name: SecondarySlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
