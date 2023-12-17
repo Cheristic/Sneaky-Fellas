@@ -5,11 +5,11 @@ using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
 using Unity.Services.Lobbies.Models;
+using System;
 
 public class MM_UIManager : NetworkBehaviour
 {
     Animator animator;
-    public GameEvent onHitJoinButton;
 
     public enum MenuScreens
     {
@@ -59,12 +59,16 @@ public class MM_UIManager : NetworkBehaviour
     // Events
     public void HitJoinButton(TextMeshProUGUI lobbyCodeInputFieldText)
     {
-        onHitJoinButton.Raise(this, lobbyCodeInputFieldText.text);
+        string c = lobbyCodeInputFieldText.text.Substring(0, lobbyCodeInputFieldText.text.Length-1); // slices off last character
+        SessionInterface.Instance.JoinPrivate(c);
     }
 
-    public void onJoinLobby(Component sender, object data)
+    // THIS FUNCTION IS CURRENTLY NOT CONNECTED TO ANYTHING
+    // Rework with modularized UI but in the meantime can just output to console for now
+    public void onJoinLobby(Component sender, object data) // Displays lobby code
     {
         Lobby l = (Lobby)data;
         canvases[1].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = l.LobbyCode;
+        GoTo_InLobby();
     }
 }

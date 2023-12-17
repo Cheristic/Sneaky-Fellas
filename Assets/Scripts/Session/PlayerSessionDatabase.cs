@@ -4,27 +4,18 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System;
 
 public class PlayerSessionDatabase : NetworkBehaviour
 {
-    public static PlayerSessionDatabase Instance { get; private set; }
 
     private NetworkList<PlayerSessionData> players;
 
-    [SerializeField] private GameEvent onPlayerDatabaseChange;
+    public event Action onPlayerDatabaseChange;
 
 
-    private void Awake()
+    public PlayerSessionDatabase()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != null)
-        {
-            Destroy(gameObject);
-        }
         players = new NetworkList<PlayerSessionData>();
 
     }
@@ -50,7 +41,7 @@ public class PlayerSessionDatabase : NetworkBehaviour
     private void HandleClientConnected(ulong clientId)
     {
         players.Add(new PlayerSessionData(clientId, "Player"));
-        onPlayerDatabaseChange.Raise(this, null);
+        onPlayerDatabaseChange?.Invoke();
     }
 
 
@@ -64,7 +55,7 @@ public class PlayerSessionDatabase : NetworkBehaviour
                 break;
             }
         }
-        onPlayerDatabaseChange.Raise(this, null);
+        onPlayerDatabaseChange?.Invoke();
     }
 
     public PlayerSessionData GetPlayerData(ulong clientId)
@@ -101,7 +92,7 @@ public class PlayerSessionDatabase : NetworkBehaviour
                 break;
             }
         }
-        onPlayerDatabaseChange.Raise(this, null);
+        onPlayerDatabaseChange?.Invoke();
     }
 
 }

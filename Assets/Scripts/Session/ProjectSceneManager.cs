@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class ProjectSceneManager : NetworkBehaviour
 {
-    public static ProjectSceneManager Instance { get; private set; }
+    //public static ProjectSceneManager Instance { get; private set; }
 
     public string MapSceneToLoad;
     [SerializeField] private Scene m_LoadedScene;
-    void Start()
+    /*void Start()
     {
         if (Instance == null)
         {
@@ -21,11 +21,12 @@ public class ProjectSceneManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
-    }
+    }*/
 
     public override void OnNetworkSpawn()
     {
         NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+        MatchmakingCommands.changeToScene += ChangeToScene;
     }
     public bool SceneIsLoaded
     {
@@ -37,6 +38,12 @@ public class ProjectSceneManager : NetworkBehaviour
             }
             return false;
         }
+    }
+
+    public void ChangeToScene(string  mapName)
+    {
+        // CURRENTLY ONLY ACCESSES THE DEFAULT MAP
+        ChangeToMapScene();
     }
     public void ChangeToMapScene()
     {

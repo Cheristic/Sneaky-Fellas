@@ -6,20 +6,21 @@ using UnityEngine.Events;
 [System.Serializable]
 public class CustomGameEvent : UnityEvent<Component, object> { }
 
-public class GameEventListener : MonoBehaviour
+public class GameEventListener_SO : MonoBehaviour
 {
-    [SerializeField] private GameEvent gameEvent;
+    [SerializeField] private GameEvent_SO GameEvent_SO;
 
     public CustomGameEvent response;
 
     private void OnEnable()
     {
-        gameEvent.RegisterListener(this);
+        GameEvent_SO.RegisterListener(this);
     }
 
     private void OnDisable()
     {
-        gameEvent.UnregisterListener(this);
+        print(gameObject.name);
+        GameEvent_SO.UnregisterListener(this);
     }
 
     public void OnEventRaised(Component sender, object data)

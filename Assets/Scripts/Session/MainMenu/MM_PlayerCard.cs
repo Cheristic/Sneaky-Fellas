@@ -10,7 +10,7 @@ public class MM_PlayerCard : MonoBehaviour
 
     public void UpdatePlayerCard(int clientNum)
     {
-        PlayerSessionData data = PlayerSessionDatabase.Instance.GetPlayerDataByIndex(clientNum);
+        PlayerSessionData data = SessionInterface.Instance.currentSession.playerSessionDatabase.GetPlayerDataByIndex(clientNum);
         playerNameText.text = data.PlayerName.ToString();
 
         visuals.SetActive(true);

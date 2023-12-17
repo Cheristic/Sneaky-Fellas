@@ -22,8 +22,8 @@ public class PlayerController : NetworkBehaviour
     private PlayerInputAction _input;
     private ThrowItemInputHandler _throwItemInputHandler;
 
-    public GameEvent playerSpawned;
-    public GameEvent playerDied;
+    public GameEvent_SO playerSpawned;
+    public GameEvent_SO playerDied;
 
     private void Start()
     {
