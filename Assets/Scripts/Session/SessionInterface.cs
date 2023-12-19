@@ -4,6 +4,9 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
+/// <summary>
+/// Outermost layer for handling the basic Session inputs received through the Main Menu
+/// </summary>
 public class SessionInterface : NetworkBehaviour
 {
     public static SessionInterface Instance { get; private set; }
@@ -35,13 +38,11 @@ public class SessionInterface : NetworkBehaviour
 
     public async void JoinPrivate(string lobbyCode)
     {
-        SessionData session = await MatchmakingCommands.Instance.JoinSession((string)lobbyCode); // return temp session because SyncSessionData will change currentSession
-        if (!String.IsNullOrEmpty(session.errorStatus)) // ERROR HAS OCCURRED
+        currentSession = await MatchmakingCommands.Instance.JoinSession((string)lobbyCode); // return temp session because SyncSessionData will change currentSession
+        if (!String.IsNullOrEmpty(currentSession.errorStatus)) // ERROR HAS OCCURRED
         {
             // Handle error
         }
-        // Add to player list then through a ClientRpc call, client will receive the server's current session data
-        SyncSessionData.Instance.AddPlayer_ServerRpc(NetworkManager.Singleton.LocalClientId, "Player");
     }
 
     public void StartGame()

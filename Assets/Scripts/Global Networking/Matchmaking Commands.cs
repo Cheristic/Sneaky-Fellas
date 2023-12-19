@@ -14,6 +14,10 @@ using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
 using System.Runtime.InteropServices;
 
+/// <summary>
+/// Global class that handles the essential Session commands (create a session, join a preexisting session, start a session).
+/// Once connection process requires a more robust system, this can serve as a base.
+/// </summary>
 public class MatchmakingCommands : NetworkBehaviour
 {
     public static MatchmakingCommands Instance { get; private set; }
@@ -31,10 +35,13 @@ public class MatchmakingCommands : NetworkBehaviour
         {
             Instance = this;
         }
-
-        NetworkManager.Singleton.NetworkConfig.ConnectionApproval = true;
-        NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionApprovalCallback;
         DontDestroyOnLoad(this);
+
+        if (IsServer)
+        {
+            NetworkManager.Singleton.NetworkConfig.ConnectionApproval = true;
+            NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionApprovalCallback;
+        }
     }
 
     // Log player into Unity's Authentication Service with a unique anonymous one-time ID
@@ -125,7 +132,7 @@ public class MatchmakingCommands : NetworkBehaviour
         newSession.players.Add(new PlayerSessionData(NetworkManager.Singleton.LocalClientId, "Player"));
 
         // Initialize first state of server's current session data
-        SyncSessionData.Instance.StartSessionDataSync_ServerRpc(newSession, NetworkManager.Singleton.LocalClientId);
+        SyncSessionData.Instance.StartSessionDataSync_ServerRpc(NetworkManager.Singleton.LocalClientId);
         return newSession;
 
     }
@@ -207,7 +214,6 @@ public class MatchmakingCommands : NetworkBehaviour
         response.Approved = true;
         response.CreatePlayerObject = false;
         response.Pending = false;
-
     }
 
     public static event Action<string> changeToScene;

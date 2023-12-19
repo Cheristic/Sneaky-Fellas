@@ -4,11 +4,13 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
+/// <summary>
+/// Global class that is responsible for syncing up the session's connection data between all connected clients. 
+/// Primarily accessed through ServerRpcs for the host client
+/// </summary>
 public class SyncSessionData : NetworkBehaviour
 {
     public static SyncSessionData Instance { get; private set; }
-
-    public SessionData serverSessionData;
 
     private void Start()
     {
@@ -21,7 +23,8 @@ public class SyncSessionData : NetworkBehaviour
             Instance = this;
             DontDestroyOnLoad(this);
         }
-        if (IsServer) NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayer_ServerRpc;
+
+
     }
 
     // In order to send clientRpc's to specific clients, this is a dictionary where client id (key) : all other client ids (value)
@@ -31,7 +34,8 @@ public class SyncSessionData : NetworkBehaviour
         clientIdParamDictionary.Clear();
         foreach (ulong id in NetworkManager.Singleton.ConnectedClientsIds)
         {
-            clientIdParamDictionary[id].Clear();
+            clientIdParamDictionary.Add(id, new List<ulong>());
+            //clientIdParamDictionary[id].Clear();
             foreach (ulong subid in NetworkManager.Singleton.ConnectedClientsIds)
             {
                 if (subid != id)
@@ -46,64 +50,73 @@ public class SyncSessionData : NetworkBehaviour
 
     // Initialized by host client
     [ServerRpc]
-    public void StartSessionDataSync_ServerRpc(SessionData sd, ulong clientId)
+    public void StartSessionDataSync_ServerRpc(ulong clientId)
     {
-        sd.players = JsonCommands.PlayerDataFromJson(sd.jsonPlayers);
-        serverSessionData = sd;
         clientIdParamDictionary.Add(clientId, new List<ulong>());
+        NetworkManager.Singleton.OnClientConnectedCallback += AddPlayer_ServerRpc;
+        NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayer_ServerRpc;
     }
-
-    // Called by clients when joined, return current session data
-    [ServerRpc]
-    public void AddPlayer_ServerRpc(ulong clientId, string playerName)
+    /// <summary>
+    /// Once joining client is connected, it can begin using RPCs.
+    /// Add to player list and update current session data to all other clients.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    public void AddPlayer_ServerRpc(ulong clientId)
     {
-        serverSessionData.players.Add(new PlayerSessionData(clientId, playerName));
+        print($"id {NetworkManager.Singleton.LocalClientId}");
+        SessionInterface.Instance.currentSession.players.Add(new PlayerSessionData(clientId, "Player"));
 
         clientIdParamDictionary.Add(clientId, new List<ulong>());
         UpdateClientIdDict();
 
-        print("yo");
-        UpdateSessionData_ServerRpc(serverSessionData);
+        UpdateSessionData_ServerRpc(null, 0);
     }
 
     // Whenever player disconnects, update the session data
-    [ServerRpc]
-    public void RemovePlayer_ServerRpc(ulong clientId)
+    [ServerRpc(RequireOwnership = false)]
+    public void RemovePlayer_ServerRpc(ulong clientId) // BROKEN
     {
-        serverSessionData.players.RemoveAt((int)clientId);
+        print($"removing {clientId} from size {SessionInterface.Instance.currentSession.players.Count}");
+        foreach (var item in clientIdParamDictionary.Keys)
+        {
+            print(item);
+        }
+        SessionInterface.Instance.currentSession.players.RemoveAt((int)clientId);
 
-        clientIdParamDictionary.Remove(clientId);
+        List<ulong> l;
+        bool success = clientIdParamDictionary.TryGetValue(clientId, out l);
+        if (success) clientIdParamDictionary.Remove(clientId);
         UpdateClientIdDict();
 
-        UpdateSessionData_ServerRpc(serverSessionData);
+        UpdateSessionData_ServerRpc(null, 0);
     }
 
 
     // Client will edit their local session data then send it to the server to be distributed to the other clients
-    // FIRST CALL SERVER
-    [ServerRpc]
-    public void UpdateSessionData_ServerRpc(SessionData sd, ulong callingId = 1024)
+    // DUAL RPCS - FIRST CALL SERVER
+    [ServerRpc(RequireOwnership = false)]
+    public void UpdateSessionData_ServerRpc(SessionData sd, ulong callingId)
     {
-        sd.players = JsonCommands.PlayerDataFromJson(sd.jsonPlayers);
-        serverSessionData = sd;
-        print("um");
+        if (sd != null) // null when client is joining or leaving, not just altering the contents of any particular session info
+        {
+            sd.players = JsonCommands.PlayerDataFromJson(sd.jsonPlayers);
+            SessionInterface.Instance.currentSession = sd;
+        }
+        
         List<ulong> l = null;
         bool success = clientIdParamDictionary.TryGetValue(callingId, out l);
         
         if (success) // Send only to selected clients
         {
             ClientRpcParams c = new() { Send = new() { TargetClientIds = l } };
-            UpdateSessionData_ClientRpc(serverSessionData, c);
-        } else // Send to all clients
-        {
-            UpdateSessionData_ClientRpc(serverSessionData);
+            UpdateSessionData_ClientRpc(SessionInterface.Instance.currentSession, c);
         }
-        serverSessionData.players.ForEach(p => print(p.PlayerName));
-    } // THEN IT'LL CALL CLIENTS
+    } // THEN CALL CLIENTS
     [ClientRpc]
     public void UpdateSessionData_ClientRpc(SessionData sd, ClientRpcParams p = default)
     {
         sd.players = JsonCommands.PlayerDataFromJson(sd.jsonPlayers);
         SessionInterface.Instance.currentSession = sd;
+
     }
 }

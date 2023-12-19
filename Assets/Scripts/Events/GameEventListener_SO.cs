@@ -19,7 +19,6 @@ public class GameEventListener_SO : MonoBehaviour
 
     private void OnDisable()
     {
-        print(gameObject.name);
         GameEvent_SO.UnregisterListener(this);
     }
 
