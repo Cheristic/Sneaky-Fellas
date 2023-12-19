@@ -23,8 +23,6 @@ public class SyncSessionData : NetworkBehaviour
             Instance = this;
             DontDestroyOnLoad(this);
         }
-
-
     }
 
     // In order to send clientRpc's to specific clients, this is a dictionary where client id (key) : all other client ids (value)

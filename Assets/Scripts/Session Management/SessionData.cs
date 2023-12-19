@@ -13,7 +13,7 @@ public class SessionData : INetworkSerializable
     public string errorStatus; // Should remain empty, if not, then error has occurred
     public string relayJoinCode;
     public List<PlayerSessionData> players;
-    public string jsonPlayers;
+    public string jsonPlayers; // Used to conver the players list to json string across rpc calls
 
 
     public SessionData()

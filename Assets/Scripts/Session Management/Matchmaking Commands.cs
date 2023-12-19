@@ -198,13 +198,20 @@ public class MatchmakingCommands : NetworkBehaviour
             {
                 Data = lobby.Data
             });
-            // Now under HandleLobbyPollForUpdates(), the game will start. Probably should change just to do rpc calls
+            // Now HandleLobbyPollForUpdates() will stop and all clients will transition to Map scene
+            if (IsServer) StartGameSession_ClientRpc();
         }
         catch (LobbyServiceException e)
         {
             Debug.LogError(e);
             session.errorStatus = e.ToString();
         }
+    }
+
+    [ClientRpc]
+    public void StartGameSession_ClientRpc()
+    {
+        changeToScene?.Invoke("Default");
     }
 
 
@@ -227,7 +234,7 @@ public class MatchmakingCommands : NetworkBehaviour
             if (lobby.Data["Game Started"].Value == "true")
             {
                 // CREATE GAME & CHANGE SCENES ####################### DEFINITELY MODIFY THIS
-                changeToScene?.Invoke(lobby.Data["Map Choice"].Value);
+                //changeToScene?.Invoke(lobby.Data["Map Choice"].Value);
 
                 // Stop polling for updates once game is joined
                 // Later, restart polling when back in lobby menu
