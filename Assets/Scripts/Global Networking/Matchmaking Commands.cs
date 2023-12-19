@@ -62,7 +62,7 @@ public class MatchmakingCommands : NetworkBehaviour
     public async Task<SessionData> CreateNewSession()
     {
         await Login();
-        SessionData newSession = SessionInterface.Instance.gameObject.AddComponent<SessionData>();
+        SessionData newSession = new();
 
         // Start Host
         try
@@ -87,6 +87,7 @@ public class MatchmakingCommands : NetworkBehaviour
 
 
         // Start Lobby
+        Lobby lobby;
         try
         {
             var options = new CreateLobbyOptions // Lobby Options object holds lobby data shared between clients
@@ -105,7 +106,8 @@ public class MatchmakingCommands : NetworkBehaviour
                 }
             };
 
-            newSession.lobby = await Lobbies.Instance.CreateLobbyAsync(options.Data["Lobby Name"].Value, int.Parse(options.Data["Player Count"].Value), options);
+            lobby = await Lobbies.Instance.CreateLobbyAsync(options.Data["Lobby Name"].Value, int.Parse(options.Data["Player Count"].Value), options);
+            newSession.lobbyId = lobby.Id;
 
         }
         catch (LobbyServiceException e)
@@ -115,9 +117,15 @@ public class MatchmakingCommands : NetworkBehaviour
             return newSession;
         }
 
-        StartCoroutine(HandleLobbyHeartBeat(newSession.lobby)); // Always active until session ends
-        HandleLobbyPoll(newSession.lobby);
-        onJoinLobby.Raise(this, newSession.lobby);
+        StartCoroutine(HandleLobbyHeartBeat(lobby)); // Always active until session ends
+        HandleLobbyPoll(lobby);
+        onJoinLobby.Raise(this, lobby);
+
+        // Edit player list of session
+        newSession.players.Add(new PlayerSessionData(NetworkManager.Singleton.LocalClientId, "Player"));
+
+        // Initialize first state of server's current session data
+        SyncSessionData.Instance.StartSessionDataSync_ServerRpc(newSession, NetworkManager.Singleton.LocalClientId);
         return newSession;
 
     }
@@ -127,29 +135,30 @@ public class MatchmakingCommands : NetworkBehaviour
     public async Task<SessionData> JoinSession(string lobbyCode)
     {
         await Login();
-        GameObject s = Instantiate(sessionDataPrefab);
-        SessionData newSession = s.GetComponent<SessionData>();
+        SessionData session = new();
 
         // Join Lobby
+        Lobby lobby;
         try
         {
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
             {
                 Player = new Player()
             };
-            newSession.lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
+            lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
+            //PlayerManagernewSession.lobbyId = lobby.Id;
 
         }
         catch (LobbyServiceException e)
         {
-            Debug.LogError(e);
-            newSession.errorStatus = e.ToString();
-            return newSession;
+            Debug.Log(e);
+            session.errorStatus = e.ToString();
+            return session;
         }
         // Join Relay
         try
         {
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(newSession.lobby.Data["Relay Join Code"].Value);
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(lobby.Data["Relay Join Code"].Value);
 
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
 
@@ -161,27 +170,28 @@ public class MatchmakingCommands : NetworkBehaviour
         catch (RelayServiceException e)
         {
             Debug.Log(e);
-            newSession.errorStatus = e.ToString();
-            return newSession;
+            session.errorStatus = e.ToString();
+            return session;
         }
 
-        StartCoroutine("HandleLobbyPoll", newSession.lobby);
-        onJoinLobby.Raise(this, newSession.lobby);
-        return newSession;
+        // SUCCESS
+        StartCoroutine("HandleLobbyPoll", lobby);
+        onJoinLobby.Raise(this, lobby);
+
+        return session;
     }
 
     public async void StartGameSession(SessionData session)
     {
         try
         {
-            print("START 1");
-            session.lobby.Data["Game Started"] = new DataObject(DataObject.VisibilityOptions.Member, "true");
-            await LobbyService.Instance.UpdateLobbyAsync(session.lobby.Id, new UpdateLobbyOptions
+            Lobby lobby = await Lobbies.Instance.GetLobbyAsync(session.lobbyId);
+            lobby.Data["Game Started"] = new DataObject(DataObject.VisibilityOptions.Member, "true");
+            await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, new UpdateLobbyOptions
             {
-                Data = session.lobby.Data
+                Data = lobby.Data
             });
-            print(session.lobby.Data["Game Started"].Value);
-            // Now under HandleLobbyPollForUpdates(), the game will start
+            // Now under HandleLobbyPollForUpdates(), the game will start. Probably should change just to do rpc calls
         }
         catch (LobbyServiceException e)
         {

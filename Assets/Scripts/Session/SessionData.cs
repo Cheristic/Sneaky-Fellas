@@ -4,16 +4,29 @@ using UnityEngine;
 using Unity.Services.Lobbies.Models;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using Newtonsoft.Json;
 
-public class SessionData : MonoBehaviour
+[System.Serializable]
+public class SessionData : INetworkSerializable
 {
-    public Lobby lobby;
+    public string lobbyId;
     public string errorStatus; // Should remain empty, if not, then error has occurred
     public string relayJoinCode;
-    public PlayerSessionDatabase playerSessionDatabase;
+    public List<PlayerSessionData> players;
+    public string jsonPlayers;
 
-    private void Start()
+
+    public SessionData()
     {
-        transform.SetParent(SessionInterface.Instance.transform);
+        players = new();
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
+    {
+        s.SerializeValue(ref lobbyId);
+        s.SerializeValue(ref relayJoinCode);
+        jsonPlayers = JsonCommands.PlayerDataToJson(players);
+        s.SerializeValue(ref jsonPlayers);
+
     }
 }

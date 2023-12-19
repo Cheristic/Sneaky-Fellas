@@ -28,7 +28,7 @@ public class MM_PlayerDisplay : NetworkBehaviour
     private void UpdatePlayerName(string input) 
     {
         if (SessionInterface.Instance.currentSession == null) return;
-        SessionInterface.Instance.currentSession.playerSessionDatabase.UpdatePlayerNameServerRpc(NetworkManager.Singleton.LocalClientId, input);
+        PlayerSessionDataCommands.UpdatePlayerName(ref SessionInterface.Instance.currentSession.players, NetworkManager.Singleton.LocalClientId, input);
     }
 
     public void UpdatePlayerDisplay()
@@ -36,7 +36,7 @@ public class MM_PlayerDisplay : NetworkBehaviour
         if (SessionInterface.Instance.currentSession == null) return;
         for (int i = 0; i < m_playerCards.Length; i++)
         {
-            if (SessionInterface.Instance.currentSession.playerSessionDatabase.GetPlayerCount() > i)
+            if (SessionInterface.Instance.currentSession.players.Count > i)
             {
                 
                 m_playerCards[i].UpdatePlayerCard(i);

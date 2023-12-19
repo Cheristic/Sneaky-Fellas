@@ -5,6 +5,7 @@ using Unity.Netcode;
 using Unity.Collections;
 using System;
 
+[Serializable]
 public struct PlayerSessionData : INetworkSerializable, IEquatable<PlayerSessionData>
 {
     public ulong ClientId;
