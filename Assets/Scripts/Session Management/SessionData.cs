@@ -14,11 +14,13 @@ public class SessionData : INetworkSerializable
     public string relayJoinCode;
     public List<PlayerSessionData> players;
     public string jsonPlayers; // Used to conver the players list to json string across rpc calls
+    public GameOptions gameOptions;
 
 
     public SessionData()
     {
         players = new();
+        gameOptions = new();
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
@@ -27,6 +29,7 @@ public class SessionData : INetworkSerializable
         s.SerializeValue(ref relayJoinCode);
         jsonPlayers = JsonCommands.PlayerDataToJson(players);
         s.SerializeValue(ref jsonPlayers);
+        s.SerializeValue(ref gameOptions);
 
     }
 }

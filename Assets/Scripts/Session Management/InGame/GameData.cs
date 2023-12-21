@@ -2,28 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-public class GameData : NetworkBehaviour
+
+/// <summary>
+/// When game begins, a GameData instance is created containing its general information (like variations, game mode, rounds won by each player).
+/// </summary>
+public class GameData : INetworkSerializable
 {
-    [SerializeField] ItemSpawnManager itemSpawnManager;
-    [SerializeField] SoundManager soundManager;
-    [SerializeField] PlayerSpawnManager playerSpawnManager;
 
-    public void GameStarting()
+    public GameOptions gameOptions;
+
+    public GameData()
     {
-        if (!IsServer) return;
-        itemSpawnManager.SpawnItemsServerRpc();
-        playerSpawnManager.SpawnPlayersServerRpc();
+        gameOptions = SessionInterface.Instance.currentSession.gameOptions; // Set the game options
     }
 
-    public void RestartRound()
+    public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
     {
-        itemSpawnManager.RespawnItemsServerRpc();
-        playerSpawnManager.RespawnPlayersServerRpc();
+        s.SerializeValue(ref gameOptions);
     }
-
-    public void AddPlayer()
-    {
-
-    }
-
 }

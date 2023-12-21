@@ -241,6 +241,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &357974089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 357974090}
+  m_Layer: 0
+  m_Name: ~~~~ GLOBAL ~~~~
+  m_TagString: EditorOnly
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &357974090
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357974089}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.0752888, y: -0.4764566, z: 88.74262}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &400657050
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,6 +998,8 @@ MonoBehaviour:
     lobbyId: 
     errorStatus: 
     relayJoinCode: 
+    players: []
+    jsonPlayers: 
 --- !u!114 &838906183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1432,7 +1465,7 @@ MonoBehaviour:
     TimeResyncInterval: 30
     EnsureNetworkVariableLengthSafety: 0
     EnableSceneManagement: 1
-    ForceSamePrefabs: 1
+    ForceSamePrefabs: 0
     RecycleNetworkIds: 1
     NetworkIdRecycleDelay: 120
     RpcHashSize: 0
@@ -2987,38 +3020,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1545701443
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1545701444}
-  m_Layer: 0
-  m_Name: --MM_MANAGERS--
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1545701444
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1545701443}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.490421, y: -16.1802, z: -0.56949997}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6219205821988709971}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1582799902
 GameObject:
   m_ObjectHideFlags: 0
@@ -3940,9 +3941,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38532e4142d172e4c8a07eb6fd9e5df6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSceneToLoad: Default Map
-  m_LoadedScene:
-    m_Handle: 0
 --- !u!1 &4073936607020456866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3955,7 +3953,7 @@ GameObject:
   - component: {fileID: 1556509908928896161}
   - component: {fileID: 6219205821988709972}
   m_Layer: 0
-  m_Name: MapManager
+  m_Name: PROJECT SCENE MANAGER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3990,11 +3988,11 @@ Transform:
   m_GameObject: {fileID: 4073936607020456866}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.990398, y: 27.064142, z: 1.6956272}
+  m_LocalPosition: {x: -7.499977, y: 10.883942, z: 1.1261272}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1545701444}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6219205821988709972
 MonoBehaviour:
@@ -4081,10 +4079,11 @@ Canvas:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1970971633}
+  - {fileID: 357974090}
   - {fileID: 838906180}
+  - {fileID: 6219205821988709971}
   - {fileID: 981066346}
+  - {fileID: 1970971633}
   - {fileID: 519420032}
-  - {fileID: 1545701444}
   - {fileID: 1746337209}
   - {fileID: 2018296291}

@@ -25,7 +25,7 @@ public abstract class ItemClass : NetworkBehaviour
     {
         if (other.gameObject.tag == "Player" && !pickedUp)
         {
-            if (Input.GetButton("Jump") && NetworkManager.Singleton.LocalClientId == (ulong)PlayerSpawnManager.Instance.GetIdByPlayerObject(other.gameObject))
+            if (Input.GetButton("Jump") && NetworkManager.Singleton.LocalClientId == (ulong)PlayerSpawner.Instance.GetIdByPlayerObject(other.gameObject))
             {
                 Debug.Log("Picked up " + itemName);
                 pickedUp = true;
@@ -47,7 +47,7 @@ public abstract class ItemClass : NetworkBehaviour
     private void PickUpItemClientRpc(ulong clientId)
     {
         clientOwnerId = clientId;
-        //playerAttached = PlayerSpawnManager.Instance.networkPlayersSpawned[(int)clientOwnerId];
+        //playerAttached = PlayerSpawner.Instance.networkPlayersSpawned[(int)clientOwnerId];
 
         gameObject.GetComponentInChildren<SpriteRenderer>().sprite = holdingSprite;
 

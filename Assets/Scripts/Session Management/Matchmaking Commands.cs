@@ -188,6 +188,7 @@ public class MatchmakingCommands : NetworkBehaviour
         return session;
     }
 
+    public static event Action<MapChoice> startGameScene;
     public async void StartGameSession(SessionData session)
     {
         try
@@ -199,7 +200,7 @@ public class MatchmakingCommands : NetworkBehaviour
                 Data = lobby.Data
             });
             // Now HandleLobbyPollForUpdates() will stop and all clients will transition to Map scene
-            if (IsServer) StartGameSession_ClientRpc();
+            if (IsServer) startGameScene?.Invoke(SessionInterface.Instance.currentSession.gameOptions.map);
         }
         catch (LobbyServiceException e)
         {
@@ -208,11 +209,7 @@ public class MatchmakingCommands : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void StartGameSession_ClientRpc()
-    {
-        changeToScene?.Invoke("Default");
-    }
+    
 
 
     // Called whenever connection is being approved by relay
@@ -222,9 +219,6 @@ public class MatchmakingCommands : NetworkBehaviour
         response.CreatePlayerObject = false;
         response.Pending = false;
     }
-
-    public static event Action<string> changeToScene;
-
     // Polling
     private async Task HandleLobbyPoll(Lobby lobby)
     {

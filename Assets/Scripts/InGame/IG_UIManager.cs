@@ -8,20 +8,21 @@ using Unity.Netcode;
 public class IG_UIManager : NetworkBehaviour
 {
 
-    private static UnityTransport _transport;
-    [SerializeField] private TextMeshProUGUI pingText;
     private float pingTimer = 1;
-    [SerializeField] GameInterface gameInterface;
 
     private void Start()
     {
-        _transport = Object.FindAnyObjectByType<UnityTransport>();
     }
     public void OnHitRespawnButton()
     {
-        gameInterface.RestartRound();
+        
     }
 
+
+
+    [SerializeField] private TextMeshProUGUI pingText;
+
+    // PING STUFF WILL CHANGE
     private void Update()
     {
         if (IsHost)
@@ -33,7 +34,6 @@ public class IG_UIManager : NetworkBehaviour
                 pingTimer = pingTimerMax;
 
                 float ping = Time.realtimeSinceStartup;
-                Debug.Log("Ping");
                 GetPingServerRpc(ping);
             }
         }
@@ -51,7 +51,6 @@ public class IG_UIManager : NetworkBehaviour
     {
         ping = (Time.realtimeSinceStartup - ping) * 1000;
         pingText.text = "Ping = " + ping.ToString("0.0") + " ms";
-        Debug.Log("Pong");
     }
 }
 

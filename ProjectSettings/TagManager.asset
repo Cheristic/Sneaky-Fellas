@@ -5,10 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Black Filter
-  - Spawn Point Parent
   - Item
   - Obstacle
   - Background
+  - Player Spawn Point
   layers:
   - Default
   - TransparentFX

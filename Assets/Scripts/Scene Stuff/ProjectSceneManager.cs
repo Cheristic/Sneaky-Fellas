@@ -3,115 +3,69 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
+using System;
 
 public class ProjectSceneManager : NetworkBehaviour
 {
-    //public static ProjectSceneManager Instance { get; private set; }
-
-    public string MapSceneToLoad;
-    [SerializeField] private Scene m_LoadedScene;
-    /*void Start()
+    private Dictionary<MapChoice, string> mapChoices = new Dictionary<MapChoice, string>
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != null)
-        {
-            Destroy(gameObject);
-        }
-    }*/
+        {MapChoice.Default, "Default Map" }
+    };
+    private string currMapChoice;
 
     public override void OnNetworkSpawn()
-    {
-        NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
-        MatchmakingCommands.changeToScene += ChangeToScene;
-    }
-    public bool SceneIsLoaded
-    {
-        get
-        {
-            if (m_LoadedScene.IsValid() && m_LoadedScene.isLoaded)
-            {
-                return true;
-            }
-            return false;
-        }
+    { 
+        DontDestroyOnLoad(this);
+        MatchmakingCommands.startGameScene += SwitchToLoadScene;
+        NetworkManager.Singleton.SceneManager.ActiveSceneSynchronizationEnabled = true;
     }
 
-    public void ChangeToScene(string  mapName)
+    private void SwitchToLoadScene(MapChoice map)
     {
-        // CURRENTLY ONLY ACCESSES THE DEFAULT MAP
-        ChangeToMapScene();
-    }
-    public void ChangeToMapScene()
-    {
-        var status = NetworkManager.SceneManager.LoadScene(MapSceneToLoad, LoadSceneMode.Single);
+        currMapChoice = mapChoices[map];
+        var status = NetworkManager.Singleton.SceneManager.LoadScene("Loading", LoadSceneMode.Single);
         if (status != SceneEventProgressStatus.Started)
         {
-            Debug.Log($"Failed to load {MapSceneToLoad}");
-        }
-    }
-
-    private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
-    {
-        var clientOrServer = sceneEvent.ClientId == NetworkManager.ServerClientId ? "server" : "client";
-        switch (sceneEvent.SceneEventType)
-        {
-            case SceneEventType.LoadComplete:
-                {
-                    // We want to handle this for only the server-side
-                    if (sceneEvent.ClientId == NetworkManager.ServerClientId)
-                    {
-                        // *** IMPORTANT ***
-                        // Keep track of the loaded scene, you need this to unload it
-                        m_LoadedScene = sceneEvent.Scene;
-                    }
-                    Debug.Log($"Loaded the {sceneEvent.SceneName} scene on " +
-                        $"{clientOrServer}-({sceneEvent.ClientId}).");
-                    break;
-                }
-            case SceneEventType.UnloadComplete:
-                {
-                    Debug.Log($"Unloaded the {sceneEvent.SceneName} scene on " +
-                        $"{clientOrServer}-({sceneEvent.ClientId}).");
-                    break;
-                }
-            case SceneEventType.LoadEventCompleted:
-            case SceneEventType.UnloadEventCompleted:
-                {
-                    var loadUnload = sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted ? "Load" : "Unload";
-                    Debug.Log($"{loadUnload} event completed for the following client " +
-                        $"identifiers:({sceneEvent.ClientsThatCompleted})");
-                    if (sceneEvent.ClientsThatTimedOut.Count > 0)
-                    {
-                        Debug.LogWarning($"{loadUnload} event timed out for the following client " +
-                            $"identifiers:({sceneEvent.ClientsThatTimedOut})");
-                    }
-                    break;
-                }
-        }
-    }
-
-    public void UnloadScene()
-    {
-        if (!IsServer || !IsSpawned || !m_LoadedScene.IsValid() || !m_LoadedScene.isLoaded)
-        {
+            Debug.Log($"Failed to load {currMapChoice}");
             return;
         }
-        var status = NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
+        NetworkManager.Singleton.SceneManager.OnSceneEvent += BeginLoad;
     }
 
-    public void UnloadSceneSelected(Scene sceneToUnload)
+    // Once in Load screen, go to selected map
+    private void BeginLoad(SceneEvent sceneEvent)
     {
-        if (!IsServer || !IsSpawned || !sceneToUnload.IsValid() || !sceneToUnload.isLoaded)
+        if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
+        NetworkManager.Singleton.SceneManager.OnSceneEvent -= BeginLoad; // Reset scene events 
+        LoadMap(); 
+    }
+
+    private void LoadMap()
+    {
+        var status = NetworkManager.Singleton.SceneManager.LoadScene(currMapChoice, LoadSceneMode.Additive);
+        if (status != SceneEventProgressStatus.Started)
         {
-            Debug.Log("Failed to unload.");
+            Debug.Log($"Failed to load {currMapChoice}");
             return;
         }
-        var status = NetworkManager.Singleton.SceneManager.UnloadScene(sceneToUnload);
+
+        NetworkManager.Singleton.SceneManager.OnSceneEvent += FinishLoadMap;
+
+        GameAssembler.TriggerStartRound += EndLoad;
     }
 
+    private void FinishLoadMap(SceneEvent sceneEvent)
+    {
+        if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
+        NetworkManager.Singleton.SceneManager.OnSceneEvent -= FinishLoadMap;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("currMapChoice"));
+    }
 
+    // Called by game scene, close Loading scene once game is ready
+    private void EndLoad()
+    {
+        GameAssembler.TriggerStartRound -= EndLoad;
+        currMapChoice = null;
+        var status = NetworkManager.Singleton.SceneManager.UnloadScene(SceneManager.GetSceneByName("Loading"));
+    }
 }
