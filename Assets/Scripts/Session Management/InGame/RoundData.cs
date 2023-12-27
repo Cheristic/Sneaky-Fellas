@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,16 +10,12 @@ using UnityEngine;
 /// </summary>
 public class RoundData : INetworkSerializable
 {
-    public List<GameObject> playersSpawned;
-    public string jsonPlayersSpawned;
+    // VARIABLES ONLY FOR ASSEMBLER
+    public List<GameObject> playersSpawned; 
+
     public RoundData()
     {
-        
-    }
-
-    public void NewRound()
-    {
-
+        playersSpawned = new();
     }
 
     public void EndRound()
@@ -28,8 +25,7 @@ public class RoundData : INetworkSerializable
 
     public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
     {
-        jsonPlayersSpawned = JsonCommands.GameObjectListToJson(playersSpawned);
-        s.SerializeValue(ref jsonPlayersSpawned);
+
     }
 
 

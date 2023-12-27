@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,20 +13,36 @@ using UnityEngine;
 /// </summary>
 public class RoundAssembler
 {
+    private RoundData roundData; // Server/Assembler instance of round data
+
     private PlayerSpawner playerSpawner;
     private ItemSpawner itemSpawner;
+
+    /// <summary>
+    /// Causes Loading scene to unload and begins any timer (EVENTUALLY) for round to start.
+    /// </summary>
+    public static event Action TriggerStartFirstRound;
+
     public RoundAssembler()
     {
         playerSpawner = GameInterface.Instance.gameObject.AddComponent<PlayerSpawner>();
         //itemSpawner = new();
+        FirstRound();
     }
 
-    public void BuildRound(int seed)
+    // ############# ROUND STARTS #############
+    private void FirstRound()
     {
-        GameInterface.Instance.roundData.NewRound(); // This is probably bad practice to reference the Interface
-        // Server will update clients local instance of roundData whenever there's a change and this is the easiest method.
-
-        GameInterface.Instance.roundData.playersSpawned = playerSpawner.NewRound();
+        roundData = new();
+        playerSpawner.NewRound(ref roundData.playersSpawned);
+        DistributeRoundData_ClientRpc(roundData); // Distribute server's Round Data
+        TriggerStartFirstRound?.Invoke();
     }
 
+    // ############# RPC + HELPER METHODS #############
+    [ClientRpc]
+    private static void DistributeRoundData_ClientRpc(RoundData roundData)
+    {
+        GameInterface.Instance.roundData = roundData;
+    }
 }

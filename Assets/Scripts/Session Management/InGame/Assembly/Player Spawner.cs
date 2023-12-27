@@ -3,16 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System;
-using System.Dynamic;
-using Unity.Networking;
-using System.Threading.Tasks;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
-using System.Threading;
 using System.Linq;
-using static UnityEditor.FilePathAttribute;
-using UnityEngine.UIElements;
 public class PlayerSpawner : NetworkBehaviour
 {
     private GameObject playerClassPrefab;
@@ -27,13 +18,11 @@ public class PlayerSpawner : NetworkBehaviour
         playerSpawnPoints = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player Spawn Point"));        
     }
 
-    public static event Action<GameObject> spawnPlayer;
-    public List<GameObject> NewRound()
+    public void NewRound(ref List<GameObject> players)
     {
         // SPAWN PLAYERS
         ShufflePlayerSpawnPoints();
         ClearPlayerObjects();
-        List<GameObject> players = new();
 
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
@@ -51,7 +40,6 @@ public class PlayerSpawner : NetworkBehaviour
             //spawnPlayer?.Invoke(newPlayer); // Pass new player to Round Data
 
         }
-        return players;
     }
 
     private void ClearPlayerObjects()

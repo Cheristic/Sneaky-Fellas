@@ -25,7 +25,7 @@ public class PlayerController : NetworkBehaviour
     public GameEvent_SO playerSpawned;
     public GameEvent_SO playerDied;
 
-    private void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         itemSlotManager = GetComponent<ItemSlotManager>();
@@ -57,11 +57,11 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        playerSpawned.Raise(this, GetComponentInParent<NetworkObject>());
+        //playerSpawned.Raise(this, GetComponentInParent<NetworkObject>());
     }
     public override void OnNetworkDespawn()
     {
-        playerDied.Raise(this, GetComponentInParent<NetworkObject>());
+        //playerDied.Raise(this, GetComponentInParent<NetworkObject>());
 
         if (!IsOwner) return;
         DisableInput();    

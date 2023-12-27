@@ -14,6 +14,8 @@ using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
 using System.Runtime.InteropServices;
 
+
+
 /// <summary>
 /// Global class that handles the essential Session commands (create a session, join a preexisting session, start a session).
 /// Once connection process requires a more robust system, this can serve as a base.
@@ -26,6 +28,7 @@ public class MatchmakingCommands : NetworkBehaviour
 
     private void Start()
     {
+
         // Make global instance of all matchmaking commands
         if (Instance != null && Instance != this)
         {
@@ -44,6 +47,8 @@ public class MatchmakingCommands : NetworkBehaviour
         }
     }
 
+
+
     // Log player into Unity's Authentication Service with a unique anonymous one-time ID
     public async Task Login()
     {
@@ -54,6 +59,17 @@ public class MatchmakingCommands : NetworkBehaviour
 
             await UnityServices.InitializeAsync(options);
         }
+
+        // ParrelSync should only be used within the Unity Editor so you should use the UNITY_EDITOR define
+#if UNITY_EDITOR
+        if (ParrelSync.ClonesManager.IsClone())
+        {
+            // When using a ParrelSync clone, switch to a different authentication profile to force the clone
+            // to sign in as a different anonymous user account.
+            string customArgument = ParrelSync.ClonesManager.GetArgument();
+            AuthenticationService.Instance.SwitchProfile($"Clone_{customArgument}_Profile");
+        }
+#endif
 
         if (!AuthenticationService.Instance.IsSignedIn)
         {
@@ -188,7 +204,7 @@ public class MatchmakingCommands : NetworkBehaviour
         return session;
     }
 
-    public static event Action<MapChoice> startGameScene;
+    public static event Action<MapChoice> startGameScene; // Subscribed from ProjectSceneManager
     public async void StartGameSession(SessionData session)
     {
         try

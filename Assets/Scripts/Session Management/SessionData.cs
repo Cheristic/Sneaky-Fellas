@@ -30,6 +30,5 @@ public class SessionData : INetworkSerializable
         jsonPlayers = JsonCommands.PlayerDataToJson(players);
         s.SerializeValue(ref jsonPlayers);
         s.SerializeValue(ref gameOptions);
-
     }
 }

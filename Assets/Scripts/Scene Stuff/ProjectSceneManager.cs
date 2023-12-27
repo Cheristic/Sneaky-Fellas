@@ -5,67 +5,95 @@ using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using System;
 
+
 public class ProjectSceneManager : NetworkBehaviour
 {
+    public static ProjectSceneManager Instance { get; private set; }
+
+    private enum LoadPhase
+    {
+        InMainMenu,
+        ToLoadScene,
+        ToGameScene,
+        InGameScene
+    }
+
+    private LoadPhase currentPhase = LoadPhase.InMainMenu;
+
     private Dictionary<MapChoice, string> mapChoices = new Dictionary<MapChoice, string>
     {
         {MapChoice.Default, "Default Map" }
     };
     private string currMapChoice;
 
-    public override void OnNetworkSpawn()
-    { 
+    private void Start()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+
         DontDestroyOnLoad(this);
-        MatchmakingCommands.startGameScene += SwitchToLoadScene;
-        NetworkManager.Singleton.SceneManager.ActiveSceneSynchronizationEnabled = true;
     }
 
-    private void SwitchToLoadScene(MapChoice map)
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer) return;
+        NetworkManager.SceneManager.ActiveSceneSynchronizationEnabled = true;
+        MatchmakingCommands.startGameScene += BeginLoadToGame; // Called once the server triggers the game to start
+        NetworkManager.SceneManager.OnSceneEvent += HandleLoadPhases;
+    }
+
+    private void BeginLoadToGame(MapChoice map)
     {
         currMapChoice = mapChoices[map];
-        var status = NetworkManager.Singleton.SceneManager.LoadScene("Loading", LoadSceneMode.Single);
+        currentPhase = LoadPhase.ToLoadScene;
+        SceneEventProgressStatus status = NetworkManager.SceneManager.LoadScene("Loading", LoadSceneMode.Single); // Begin load for all clients
         if (status != SceneEventProgressStatus.Started)
         {
             Debug.Log($"Failed to load {currMapChoice}");
             return;
         }
-        NetworkManager.Singleton.SceneManager.OnSceneEvent += BeginLoad;
     }
 
-    // Once in Load screen, go to selected map
-    private void BeginLoad(SceneEvent sceneEvent)
+    private void HandleLoadPhases(SceneEvent sceneEvent)
     {
-        if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
-        NetworkManager.Singleton.SceneManager.OnSceneEvent -= BeginLoad; // Reset scene events 
-        LoadMap(); 
-    }
+        bool IsServer = sceneEvent.ClientId == NetworkManager.ServerClientId ? true : false;
+        if (!IsServer) return; // Only Server is allowed to manage the Scene Event Phase
 
-    private void LoadMap()
-    {
-        var status = NetworkManager.Singleton.SceneManager.LoadScene(currMapChoice, LoadSceneMode.Additive);
-        if (status != SceneEventProgressStatus.Started)
+        if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted)
         {
-            Debug.Log($"Failed to load {currMapChoice}");
-            return;
+            switch (currentPhase)
+            {
+                // If phase is somehow InMainMenu it'll not do anything
+                case LoadPhase.ToLoadScene:  // Loading scene has loaded for all clients, now go to Game
+                    var status = NetworkManager.Singleton.SceneManager.LoadScene(currMapChoice, LoadSceneMode.Additive);
+                    if (status != SceneEventProgressStatus.Started)
+                    {
+                        Debug.Log($"Failed to load {currMapChoice}");
+                        return;
+                    }
+                    currentPhase += 1; // Transition to next phase
+                    break;
+                case LoadPhase.ToGameScene: // Game is loaded for all clients, now prepare the game
+                    currentPhase += 1;
+                    RoundAssembler.TriggerStartFirstRound += GameStarting; // Once game is prepped
+                    SceneManager.SetActiveScene(SceneManager.GetSceneByName(currMapChoice));
+                    GameInterface.Instance.PrepareGame(); // Only called by server
+                    break;
+            }
+
         }
-
-        NetworkManager.Singleton.SceneManager.OnSceneEvent += FinishLoadMap;
-
-        GameAssembler.TriggerStartRound += EndLoad;
     }
 
-    private void FinishLoadMap(SceneEvent sceneEvent)
+    // Called once First Round has finished assembling and is about to start
+    private void GameStarting()
     {
-        if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
-        NetworkManager.Singleton.SceneManager.OnSceneEvent -= FinishLoadMap;
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("currMapChoice"));
-    }
-
-    // Called by game scene, close Loading scene once game is ready
-    private void EndLoad()
-    {
-        GameAssembler.TriggerStartRound -= EndLoad;
-        currMapChoice = null;
-        var status = NetworkManager.Singleton.SceneManager.UnloadScene(SceneManager.GetSceneByName("Loading"));
+        RoundAssembler.TriggerStartFirstRound -= GameStarting;
+        var status = NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneByName("Loading"));
     }
 }
