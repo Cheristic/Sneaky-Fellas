@@ -14,8 +14,8 @@ public class HandgunBullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        PlayerHealth health;
-        if (health = collider.GetComponent<PlayerHealth>())
+        PlayerHealthOld health;
+        if (health = collider.GetComponent<PlayerHealthOld>())
         {
             health.GetHit(1, handgun.playerAttached.transform.GetChild(0).gameObject);
             Destroy(gameObject);

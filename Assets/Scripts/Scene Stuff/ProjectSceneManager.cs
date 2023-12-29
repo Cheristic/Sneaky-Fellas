@@ -81,9 +81,9 @@ public class ProjectSceneManager : NetworkBehaviour
                     break;
                 case LoadPhase.ToGameScene: // Game is loaded for all clients, now prepare the game
                     currentPhase += 1;
-                    RoundAssembler.TriggerStartFirstRound += GameStarting; // Once game is prepped
+                    RoundAssembler.TriggerStartFirstRound += GameStarting; // Once game is fully prepped
                     SceneManager.SetActiveScene(SceneManager.GetSceneByName(currMapChoice));
-                    GameInterface.Instance.PrepareGame(); // Only called by server
+                    GameInterface.Instance.PrepareGame(); // Cues server to begin assembling game scene
                     break;
             }
 

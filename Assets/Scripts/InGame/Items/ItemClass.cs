@@ -20,20 +20,6 @@ public abstract class ItemClass : NetworkBehaviour
         gameObject.GetComponentInChildren<SpriteRenderer>().sprite = pickedUp ? holdingSprite : droppedSprite;
     }
 
-    //Handle pick up collisions
-    /*private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.gameObject.tag == "Player" && !pickedUp)
-        {
-            if (Input.GetButton("Jump") && NetworkManager.Singleton.LocalClientId == (ulong)PlayerSpawner.Instance.GetIdByPlayerObject(other.gameObject))
-            {
-                Debug.Log("Picked up " + itemName);
-                pickedUp = true;
-                PickUpItemServerRpc();
-            }
-        }
-    }*/
-
     [ServerRpc(RequireOwnership = false)]
     public void PickUpItemServerRpc(ServerRpcParams serverRpcParams = default)
     {

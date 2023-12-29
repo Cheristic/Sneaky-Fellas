@@ -90,7 +90,8 @@ public class SyncSessionData : NetworkBehaviour
     }
 
 
-    // Client will edit their local session data then send it to the server to be distributed to the other clients
+
+    // Client will request server for data change and Server will distribute the updated version
     // DUAL RPCS - FIRST CALL SERVER
     [ServerRpc(RequireOwnership = false)]
     public void UpdateSessionData_ServerRpc(SessionData sd, ulong callingId)
