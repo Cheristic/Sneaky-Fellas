@@ -24,5 +24,6 @@ public class PlayerConstructor : NetworkBehaviour
         }
         i.playerAddOn.transform.parent = transform;
         i.clientId = OwnerClientId;
+
     }
 }

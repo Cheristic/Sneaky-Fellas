@@ -34,6 +34,7 @@ Transform:
   m_Children:
   - {fileID: 5942714526978459029}
   - {fileID: 3989176447143025926}
+  - {fileID: 1274566324082327408}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5143359878795215680
@@ -68,6 +69,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db8c08d9c854c044185e124724eef6a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 2
+  rotateSpeed: 3
 --- !u!114 &8709954878718931156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,7 +85,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FOV_Cone: {fileID: 5973446329417269259}
   FOV_Circle: {fileID: 8036947091040274894}
-  playerTransform: {fileID: 0}
 --- !u!1 &455237754514587296
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,3 +351,49 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!1 &5814625853874233774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1274566324082327408}
+  - component: {fileID: 6459966219501808900}
+  m_Layer: 0
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1274566324082327408
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5814625853874233774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4089713939707307746}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6459966219501808900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5814625853874233774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19039ce82b326914aaca38b84267ca48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  threshold: 16
+  distanceLimiter: 5

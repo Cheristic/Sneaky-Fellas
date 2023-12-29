@@ -2,17 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraTarget : MonoBehaviour
+public class PlayerCameraTarget : MonoBehaviour
 {
-    [SerializeField] Transform player;
+    Transform player;
     [SerializeField] float threshold;
     [SerializeField] float distanceLimiter;
 
-    // Update is called once per frame
+    private void Awake()
+    {
+        // Tells the player camera to start following this target
+        PlayerCameraMovement.Instance.targetToTrack = transform;
+        player = PlayerInterface.Main.playerObject.transform;
+    }
     void Update()
     {
-        float finalAngle = player.transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
-        var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), player.transform.rotation.z);
+        float finalAngle = player.rotation.eulerAngles.z * Mathf.Deg2Rad;
+        var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), player.rotation.z);
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
