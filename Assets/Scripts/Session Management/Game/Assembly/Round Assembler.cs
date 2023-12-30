@@ -23,6 +23,8 @@ public class RoundAssembler
     /// </summary>
     public static event Action TriggerStartFirstRound;
 
+    public static event Action TriggerStartNewRound;
+
     public RoundAssembler()
     {
         playerSpawner = GameInterface.Instance.gameObject.AddComponent<PlayerSpawner>();
@@ -37,6 +39,14 @@ public class RoundAssembler
         playerSpawner.NewRound(ref roundData.playersSpawned);
         DistributeRoundData_ClientRpc(roundData); // Distribute server's Round Data
         TriggerStartFirstRound?.Invoke();
+    }
+
+    /// <summary>
+    /// Called to begin all subsequent rounds.
+    /// </summary>
+    private void NewRound()
+    {
+        roundData = new();
     }
 
     // ############# RPC + HELPER METHODS #############

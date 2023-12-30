@@ -14,7 +14,7 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void Awake()
     {
-        playerClassPrefab = (GameObject)Resources.Load("InGame/Player/PlayerClass");
+        playerClassPrefab = (GameObject)Resources.Load("InGame/Player/Player");
         playerSpawnPoints = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player Spawn Point"));        
     }
 
@@ -30,7 +30,7 @@ public class PlayerSpawner : NetworkBehaviour
             Debug.Log("Spawning player for " + clientId);
 
             var pos = playerSpawnPoints[(int)clientId].transform.position;
-            newPlayer.transform.Find("Player").gameObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
+            newPlayer.GetComponent<PlayerInterface>().playerObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
 
             newPlayer.SetActive(true);
 

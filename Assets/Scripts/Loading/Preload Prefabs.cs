@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PreloadPrefabs : MonoBehaviour
 {
-    [SerializeField] GameObject playerClassPrefab;
+    [SerializeField] GameObject[] prefabs;
     void Start()
     {
-        //var playerClassPrefab = (GameObject)Resources.Load("Assets/InGame/Player/PlayerClass");
-        NetworkManager.Singleton.AddNetworkPrefab(playerClassPrefab);
+        // Eventually likely change to Addressables
+        foreach (var prefab in prefabs)
+        {
+            NetworkManager.Singleton.AddNetworkPrefab(prefab);
+        }
+        
     }
 }

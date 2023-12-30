@@ -22,6 +22,7 @@ public class PlayerConstructor : NetworkBehaviour
             gameObject.layer = LayerMask.NameToLayer("BehindMask");
             i.playerAddOn = Instantiate(OtherPlayerPrefab); // Give player the OtherPlayer Module
         }
+        i.playerAddOn.GetComponent<NetworkObject>().Spawn(true);
         i.playerAddOn.transform.parent = transform;
         i.clientId = OwnerClientId;
 

@@ -18,11 +18,18 @@ public class PlayerInterface : NetworkBehaviour
 
     [HideInInspector] public PlayerHealth playerHealth;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
-            Main = this;
+            if (Main != null && Main != this)
+            {
+                Destroy(this);
+            }
+            else
+            {
+                Main = this;
+            }
         }
     }
 }

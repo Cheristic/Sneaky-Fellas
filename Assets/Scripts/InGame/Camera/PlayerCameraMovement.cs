@@ -18,6 +18,7 @@ public class PlayerCameraMovement : NetworkBehaviour
 
     void Update()
     {
+        if (targetToTrack == null) return;
         transform.position = new Vector3(targetToTrack.position.x, targetToTrack.position.y, transform.position.z);
     }
 

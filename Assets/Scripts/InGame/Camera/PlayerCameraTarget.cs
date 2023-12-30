@@ -8,7 +8,7 @@ public class PlayerCameraTarget : MonoBehaviour
     [SerializeField] float threshold;
     [SerializeField] float distanceLimiter;
 
-    private void Awake()
+    private void Start()
     {
         // Tells the player camera to start following this target
         PlayerCameraMovement.Instance.targetToTrack = transform;

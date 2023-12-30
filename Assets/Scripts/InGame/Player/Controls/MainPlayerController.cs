@@ -15,10 +15,10 @@ public class MainPlayerController : MonoBehaviour
     private Interact_InputHandler interactor;
 
     [Header("Attributes")]
-    [SerializeField] private float movementSpeed = 2.0f;
+    [SerializeField] private float movementSpeed = 30.0f;
     [SerializeField] private float rotateSpeed = 3.0f;
 
-    void Awake()
+    void Start()
     {
         rb = PlayerInterface.Main.playerObject.GetComponent<Rigidbody2D>();
         inputs = new();
@@ -27,7 +27,7 @@ public class MainPlayerController : MonoBehaviour
     }
 
     private Vector2 movementVector = new();
-    public static event Action<Vector3> updateFOVDirection;
+    public static event Action<Vector3> updateFOV;
 
     private void Update()
     {
@@ -44,7 +44,7 @@ public class MainPlayerController : MonoBehaviour
         // Transmit direction to FOVs
         float finalAngle = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
         var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), dir.z);
-        updateFOVDirection.Invoke(finalDir);
+        updateFOV.Invoke(finalDir);
     }
 
     private void FixedUpdate()
