@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class PlayerCameraTarget : MonoBehaviour
     {
         // Tells the player camera to start following this target
         PlayerCameraMovement.Instance.targetToTrack = transform;
+        PlayerCameraMovement.Instance.GetComponent<CinemachineVirtualCamera>().Follow = transform;
         player = PlayerInterface.Main.playerObject.transform;
     }
     void Update()

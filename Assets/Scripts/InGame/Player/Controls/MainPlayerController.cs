@@ -9,7 +9,8 @@ using UnityEngine;
 public class MainPlayerController : MonoBehaviour
 {
     // When sending the player netcode, send its transform and the force applied to the rigidbody.
-    Rigidbody2D rb;
+    Transform pTransform;
+    Rigidbody2D pRigidbody;
     private PlayerInputAction inputs;
     private ItemSlotManager itemSlotManager;
     private Interact_InputHandler interactor;
@@ -20,35 +21,50 @@ public class MainPlayerController : MonoBehaviour
 
     void Start()
     {
-        rb = PlayerInterface.Main.playerObject.GetComponent<Rigidbody2D>();
+        pTransform = PlayerInterface.Main.playerObject.transform;
+        pRigidbody = PlayerInterface.Main.playerObject.GetComponent<Rigidbody2D>();
         inputs = new();
-        inputs.MainPlayer.Enable();
+        RoundCountdown.countdownOver += StartRound;
         itemSlotManager = new(ref inputs);
     }
 
     private Vector2 movementVector = new();
     public static event Action<Vector3> updateFOV;
 
+    private void StartRound()
+    {
+        inputs.MainPlayer.Enable();
+    }
+
+    void OnDisable()
+    {
+        inputs.MainPlayer.Disable();
+    }
+
     private void Update()
     {
         // #### MOVEMENT ####
-        movementVector.x = Input.GetAxisRaw("Horizontal");
-        movementVector.y = Input.GetAxisRaw("Vertical");
-
+        if(inputs.MainPlayer.enabled)
+        {
+            movementVector = inputs.MainPlayer.Move.ReadValue<Vector2>();
+            //movementVector.x = Input.GetAxisRaw("Horizontal");
+            //movementVector.y = Input.GetAxisRaw("Vertical");
+        }
+        
         // #### ROTATION ####
-        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
+        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(pTransform.position);
         var targetAngle = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
-        Quaternion currentAngle = transform.rotation;
-        transform.rotation = Quaternion.Lerp(currentAngle, targetAngle, rotateSpeed * Time.deltaTime);
+        Quaternion currentAngle = pTransform.rotation;
+        pTransform.rotation = Quaternion.Lerp(currentAngle, targetAngle, rotateSpeed * Time.deltaTime);
 
         // Transmit direction to FOVs
-        float finalAngle = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+        float finalAngle = pTransform.rotation.eulerAngles.z * Mathf.Deg2Rad;
         var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), dir.z);
         updateFOV.Invoke(finalDir);
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = movementVector.normalized * movementSpeed;
+        pRigidbody.velocity = new Vector2(movementVector.x, movementVector.y).normalized * movementSpeed;
     }
 }

@@ -11,7 +11,7 @@ using UnityEngine;
 /// Once variations come into play, this is what will be responsible for implementing them.
 /// Basically serves as an abstract layer between Game Assembler and RoundData.
 /// </summary>
-public class RoundAssembler
+public class RoundAssembler : MonoBehaviour
 {
     private RoundData roundData; // Server/Assembler instance of round data
 
@@ -22,21 +22,21 @@ public class RoundAssembler
     /// Causes Loading scene to unload and begins any timer (EVENTUALLY) for round to start.
     /// </summary>
     public static event Action TriggerStartFirstRound;
-
     public static event Action TriggerStartNewRound;
 
-    public RoundAssembler()
+    private void Start()
     {
         playerSpawner = GameInterface.Instance.gameObject.AddComponent<PlayerSpawner>();
         //itemSpawner = new();
         FirstRound();
+        SyncRoundData.RoundEnd += RoundEnd;
     }
 
-    // ############# ROUND STARTS #############
+    // ############# ROUND STARTERS #############
     private void FirstRound()
     {
         roundData = new();
-        playerSpawner.NewRound(ref roundData.playersSpawned);
+        playerSpawner.FirstRound(ref roundData.playersSpawned);
         DistributeRoundData_ClientRpc(roundData); // Distribute server's Round Data
         TriggerStartFirstRound?.Invoke();
     }
@@ -46,7 +46,10 @@ public class RoundAssembler
     /// </summary>
     private void NewRound()
     {
-        roundData = new();
+        roundData.NewRound();
+        playerSpawner.NewRound(ref roundData);
+        DistributeRoundData_ClientRpc(roundData); // Distribute server's Round Data
+        TriggerStartNewRound?.Invoke();
     }
 
     // ############# RPC + HELPER METHODS #############
@@ -54,5 +57,21 @@ public class RoundAssembler
     private static void DistributeRoundData_ClientRpc(RoundData roundData)
     {
         GameInterface.Instance.roundData = roundData;
+    }
+
+    private void RoundEnd(ulong winnerClientId) { StartCoroutine(RoundEndTimer(5)); }
+
+    private IEnumerator RoundEndTimer(int timer)
+    {
+        Debug.Log("entering");
+        while (timer > 0)
+        {
+            Debug.Log(timer);
+            timer--;
+            yield return new WaitForSeconds(1f);
+        }
+
+        NewRound(); 
+        yield break;
     }
 }

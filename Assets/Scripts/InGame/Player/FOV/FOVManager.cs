@@ -10,10 +10,8 @@ public class FOVManager : MonoBehaviour
 
     private void Start()
     {
-        playerTransform = PlayerInterface.Main.playerObject.transform;
+        playerTransform = PlayerInterface.Main.playerObject.GetComponent<Rigidbody2D>().transform;
         MainPlayerController.updateFOV += UpdateFOV;
-        FOV_Cone.transform.position = playerTransform.position;
-        FOV_Circle.transform.position = playerTransform.position;
     }
 
     void UpdateFOV(Vector3 dir)

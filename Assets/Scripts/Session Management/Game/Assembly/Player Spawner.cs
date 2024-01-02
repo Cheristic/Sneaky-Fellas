@@ -18,7 +18,7 @@ public class PlayerSpawner : NetworkBehaviour
         playerSpawnPoints = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player Spawn Point"));        
     }
 
-    public void NewRound(ref List<GameObject> players)
+    public void FirstRound(ref List<GameObject> players)
     {
         // SPAWN PLAYERS
         ShufflePlayerSpawnPoints();
@@ -42,11 +42,22 @@ public class PlayerSpawner : NetworkBehaviour
         }
     }
 
+    public void NewRound(ref RoundData roundData)
+    {
+        ShufflePlayerSpawnPoints();
+
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            var pos = playerSpawnPoints[(int)clientId].transform.position;
+            roundData.playersSpawned[(int)clientId].GetComponent<PlayerInterface>().playerObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
+        }
+    }
+
     private void ClearPlayerObjects()
     {
         foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClients.Values)
         {
-            if (client.PlayerObject is not null)
+            if (client.PlayerObject is not null && client.PlayerObject.IsSpawned)
             {
                 client.PlayerObject.Despawn();
                 Destroy(client.PlayerObject.gameObject);

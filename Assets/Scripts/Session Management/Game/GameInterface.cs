@@ -34,13 +34,6 @@ public class GameInterface : NetworkBehaviour
     {
         // ONLY SERVER HAS ACCESS TO ASSEMBLERS, CLIENTS OWN LOCAL INSTANCE OF DATA BUT CAN ONLY MAKE CHANGES BY PINGING SERVER
         gameAssembler = new();
-    }
-
-    /// <summary>
-    /// Called once Assemblers are finished. Starts a round.
-    /// </summary>
-    public void StartRound()
-    {
-
+        gameObject.AddComponent<RoundAssembler>();
     }
 }

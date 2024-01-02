@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using Cinemachine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerCameraMovement : NetworkBehaviour
 {
@@ -11,9 +12,10 @@ public class PlayerCameraMovement : NetworkBehaviour
 
     [HideInInspector] public Transform targetToTrack;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
         Instance = this;
+        GetComponent<PixelPerfectCamera>().runInEditMode = true;
     }
 
     void Update()

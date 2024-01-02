@@ -10,4 +10,14 @@ public class PlayerHealth
     private int maxHealth;
     internal int currentHealth;
     internal bool isDead = false;
+
+    private void TakeDamage(int dmg)
+    {
+
+    }
+     
+    private void Die()
+    {
+
+    }
 }

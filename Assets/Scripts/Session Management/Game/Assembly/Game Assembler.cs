@@ -11,7 +11,6 @@ using System;
 public class GameAssembler
 {
     private GameData gameData; // Server instance of Game Data
-    private RoundAssembler roundAssembler;
 
 
     // ############# GAME SCENE STARTS #############
@@ -20,7 +19,6 @@ public class GameAssembler
         gameData = new(); // Create the game data
         DistributeGameData_ClientRpc(gameData); // Distribute server's game data
 
-        roundAssembler = new();
     }
 
     public void NewRound()

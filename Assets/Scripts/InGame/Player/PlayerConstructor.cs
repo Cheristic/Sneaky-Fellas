@@ -24,7 +24,15 @@ public class PlayerConstructor : NetworkBehaviour
         }
         i.playerAddOn.GetComponent<NetworkObject>().Spawn(true);
         i.playerAddOn.transform.parent = transform;
+        i.playerAddOn.GetComponent<NetworkObject>().TrySetParent(transform);
         i.clientId = OwnerClientId;
+    }
 
+    public override void OnDestroy()
+    {
+        PlayerInterface i = GetComponent<PlayerInterface>();
+        i.playerAddOn.GetComponent<NetworkObject>().Despawn(true);
+        i.playerAddOn.GetComponent<NetworkObject>().TryRemoveParent();
+        base.OnDestroy();
     }
 }

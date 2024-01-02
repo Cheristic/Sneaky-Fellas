@@ -6,7 +6,8 @@ using System;
 
 /// <summary>
 /// Global class that is responsible for syncing up the session's connection data between all connected clients. 
-/// Primarily accessed through ServerRpcs for the host client
+/// Primarily accessed through ServerRpcs for the host client.
+/// Also, used to access the client rpc param lists for each combination of clients
 /// </summary>
 public class SyncSessionData : NetworkBehaviour
 {
@@ -119,3 +120,4 @@ public class SyncSessionData : NetworkBehaviour
 
     }
 }
+

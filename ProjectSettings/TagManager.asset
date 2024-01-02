@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - Background
   - Player Spawn Point
+  - Misc Camera
   layers:
   - Default
   - TransparentFX
