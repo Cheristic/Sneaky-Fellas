@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 8426956075033859747}
   - component: {fileID: 2972268949262767728}
   - component: {fileID: 3346321274676284938}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SpriteManager
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 4024394627919107672}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -165,13 +165,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7737478835297434964}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5e69948184e92a4f86e0b2446ece1a6, type: 3}
+  m_Script: {fileID: 11500000, guid: c494063aacaa70441938c49265fc0c83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clientId: 0
+  playerId: 0
   IsMainPlayer: 0
+  playerSpawnLocation: {x: 0, y: 0, z: 0}
   playerObject: {fileID: 8809805206336532851}
   playerAddOn: {fileID: 0}
+  playerHealth: {fileID: 0}
   playerSprite: {fileID: 2972268949262767728}
 --- !u!114 &2991112530798784007
 MonoBehaviour:
@@ -202,11 +204,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7737478835297434964}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dd51de70b1f0a94284bafd3a3540c23, type: 3}
+  m_Script: {fileID: 11500000, guid: e8373174cee6b7b4681924fc6764b404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   MainPlayerPrefab: {fileID: 177003456399638737, guid: dcdfc460a0953924db7fe62079887f82, type: 3}
-  OtherPlayerPrefab: {fileID: 177003456399638737, guid: 6f447864af4f0e54dbdbc4d629861b8b, type: 3}
+  NetworkPlayerPrefab: {fileID: 177003456399638737, guid: 6f447864af4f0e54dbdbc4d629861b8b, type: 3}
 --- !u!95 &4024394627919107672
 Animator:
   serializedVersion: 5
@@ -242,7 +244,7 @@ GameObject:
   - component: {fileID: 1851255222390194665}
   m_Layer: 11
   m_Name: PlayerObject
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

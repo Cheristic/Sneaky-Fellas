@@ -33,7 +33,6 @@ public abstract class ItemClass : NetworkBehaviour
     private void PickUpItemClientRpc(ulong clientId)
     {
         clientOwnerId = clientId;
-        //playerAttached = PlayerSpawner.Instance.networkPlayersSpawned[(int)clientOwnerId];
 
         gameObject.GetComponentInChildren<SpriteRenderer>().sprite = holdingSprite;
 

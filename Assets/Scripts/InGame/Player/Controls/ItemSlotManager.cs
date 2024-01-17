@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Interface for managing a player's currently held items, including their use, throws, etc.
 /// </summary>
-public class ItemSlotManager
+public class ItemSlotManager : MonoBehaviour
 {
     public GameObject primaryWeaponSlot;
     public GameObject secondaryPickupSlot;

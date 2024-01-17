@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #if UNITY_EDITOR
 [InitializeOnLoad]
-#else
-[RuntimeInitializeOnLoadMethod]
 #endif
 public class ThrowInputAction : IInputInteraction
 {

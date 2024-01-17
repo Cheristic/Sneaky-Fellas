@@ -468,7 +468,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 1.245
+  orthographic size: 50
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -991,7 +991,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 838906177}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8808e50c23d132e42aa3035e9b1596d4, type: 3}
+  m_Script: {fileID: 11500000, guid: f62b9f44110b8f046b77ecddc235ead4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   currentSession:
@@ -1029,7 +1029,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 838906177}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd5d16ca5a83b42409e076deb6ac4a18, type: 3}
+  m_Script: {fileID: 11500000, guid: 73d64fdf272f9184e96f4c8cd53d1aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _transport: {fileID: 981066345}
@@ -1044,7 +1044,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 838906177}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dd0ee8159c0f564f863466eb5528cf3, type: 3}
+  m_Script: {fileID: 11500000, guid: 4516b27fb2e697b478f6c4f78150e503, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &898637344
@@ -1410,7 +1410,7 @@ MonoBehaviour:
   m_ProtocolType: 1
   m_UseWebSockets: 0
   m_UseEncryption: 0
-  m_MaxPacketQueueSize: 128
+  m_MaxPacketQueueSize: 256
   m_MaxPayloadSize: 6144
   m_HeartbeatTimeoutMS: 500
   m_ConnectTimeoutMS: 1000

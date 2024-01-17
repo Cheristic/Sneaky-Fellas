@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 using System.Linq;
+using Unity.Multiplayer.Samples.Utilities;
 public class PlayerSpawner : NetworkBehaviour
 {
     private GameObject playerClassPrefab;
@@ -12,56 +13,46 @@ public class PlayerSpawner : NetworkBehaviour
     private static System.Random rng = new System.Random();
     private List<GameObject> playerSpawnPoints;
 
-    private void Awake()
+    public void Init()
     {
         playerClassPrefab = (GameObject)Resources.Load("InGame/Player/Player");
         playerSpawnPoints = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player Spawn Point"));        
     }
 
-    public void FirstRound(ref List<GameObject> players)
+    public void FirstRound(ref RoundData roundData)
     {
         // SPAWN PLAYERS
         ShufflePlayerSpawnPoints();
-        ClearPlayerObjects();
 
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        foreach (PlayerSessionData player in SessionInterface.Instance.currentSession.players)
         {
             GameObject newPlayer = Instantiate(playerClassPrefab, Vector3.zero, Quaternion.identity);
-            Debug.Log("Spawning player for " + clientId);
 
-            var pos = playerSpawnPoints[(int)clientId].transform.position;
-            newPlayer.GetComponent<PlayerInterface>().playerObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
+            var pos = playerSpawnPoints[(int)player.LocalClientId].transform.position;
+            newPlayer.GetComponent<PlayerInterface>().playerSpawnLocation = new Vector3(pos.x, pos.y, pos.z); // Set initial spawn zone
 
             newPlayer.SetActive(true);
 
-            newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+            newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(player.LocalClientId, true); // Players will begin constructing themselves
 
-            players.Add(newPlayer);
-            //spawnPlayer?.Invoke(newPlayer); // Pass new player to Round Data
+            roundData.players.Add(newPlayer.GetComponent<PlayerInterface>()); // Pass new player to Round Data
+        }
 
+        for (int i = 0; i < roundData.players.Count; i++)
+        {
+            roundData.playerNetworkObjects[i] = roundData.players[i].GetComponent<NetworkObject>();
         }
     }
 
     public void NewRound(ref RoundData roundData)
     {
         ShufflePlayerSpawnPoints();
-
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        // Reset Player info and place in different spawn location
+        foreach (PlayerSessionData player in SessionInterface.Instance.currentSession.players)
         {
-            var pos = playerSpawnPoints[(int)clientId].transform.position;
-            roundData.playersSpawned[(int)clientId].GetComponent<PlayerInterface>().playerObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
-        }
-    }
-
-    private void ClearPlayerObjects()
-    {
-        foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClients.Values)
-        {
-            if (client.PlayerObject is not null && client.PlayerObject.IsSpawned)
-            {
-                client.PlayerObject.Despawn();
-                Destroy(client.PlayerObject.gameObject);
-            }
+            var pos = playerSpawnPoints[(int)player.LocalClientId].transform.position;
+            PlayerInterface i = roundData.players[(int)player.LocalClientId].GetComponent<PlayerInterface>();
+            i.playerSpawnLocation = new Vector3(pos.x, pos.y, pos.z);
         }
     }
 

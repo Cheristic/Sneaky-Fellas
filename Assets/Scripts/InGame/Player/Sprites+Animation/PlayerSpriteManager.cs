@@ -1,18 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 /// <summary>
 /// Main hub for handling player's current sprite and animation. Disjointed from player object, follows it.
 /// </summary>
-public class PlayerSpriteManager : MonoBehaviour
+public class PlayerSpriteManager : NetworkBehaviour
 {
     private GameObject playerObject;
     private Rigidbody2D playerRB;
     private Animator movementAnimator;
     void Start()
     {
-        playerObject = PlayerInterface.Main.playerObject;
+        if (IsOwner)
+        {
+            // EVENTS
+            MainPlayerHealth.mainPlayerDied += OnDie;
+            playerObject = PlayerInterface.Main.playerObject;
+        } else
+        {
+            playerObject = GetComponentInParent<PlayerInterface>().playerObject;
+        }
         playerRB = playerObject.GetComponent<Rigidbody2D>();
         movementAnimator = GetComponent<Animator>();
     }
@@ -25,5 +34,11 @@ public class PlayerSpriteManager : MonoBehaviour
         movementAnimator.SetFloat("Aim", playerRB.rotation / 360 + .5f); // Set direction
 
         transform.position = playerObject.transform.position;
+        
+    }
+
+    public void OnDie()
+    {
+        movementAnimator.SetBool("IsAlive", false);
     }
 }

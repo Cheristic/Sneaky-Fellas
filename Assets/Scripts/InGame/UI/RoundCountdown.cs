@@ -5,21 +5,46 @@ using Unity.Services.Lobbies;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Unity.Netcode;
 
 /// <summary>
 /// Handle countdown for beginning of each round
 /// </summary>
-public class RoundCountdown : MonoBehaviour
+public class RoundCountdown : NetworkBehaviour, INetworkUpdateSystem
 {
     [SerializeField] Sprite[] countdownSprites;
-    public static event Action countdownOver;
-    private void Awake()
+    public static event Action StartRound;
+
+    private NetworkVariable<bool> roundReady = new(false);
+    public override void OnNetworkSpawn()
     {
-        RoundAssembler.TriggerStartFirstRound += StartCountdown;
-        RoundAssembler.TriggerStartNewRound += StartCountdown;
+        if (IsServer)
+        {
+            SyncGameData.TriggerNewRoundReady.AddListener(StartCountdown); // Set round ready from server
+            roundReady.Value = false;
+        }
+        
+        NetworkUpdateLoop.RegisterNetworkUpdate(this, NetworkUpdateStage.Update); // All clients enter update loop to check roundReady's status in sync
+        SyncGameData.BuildNewRound.AddListener(OnBuildNewRound);
     }
 
-    private void StartCountdown() => StartCoroutine(CountdownEnumerator(3));
+    private void OnBuildNewRound()
+    {
+        NetworkUpdateLoop.RegisterNetworkUpdate(this, NetworkUpdateStage.Update);
+    }
+
+    public void NetworkUpdate(NetworkUpdateStage net)
+    {
+        if (roundReady.Value == true) {
+            StartCoroutine(CountdownEnumerator(3));
+            NetworkUpdateLoop.UnregisterNetworkUpdate(this, NetworkUpdateStage.Update); // Remove to avoid update check
+        }
+    }
+
+    // Set roundReady to true for all clients
+    private void StartCountdown() => roundReady.Value = true;
+
+    // Called once client detects roundReady is true
     private IEnumerator CountdownEnumerator(int total)
     {
         Image image = GetComponent<Image>();
@@ -29,7 +54,7 @@ public class RoundCountdown : MonoBehaviour
             float c = 0;
             total--;
             
-            // counter will add up until it reaches1 seconds
+            // counter will add up until it reaches 1 seconds
             while (c < 1)
             {
                 c += Time.deltaTime;
@@ -38,14 +63,15 @@ public class RoundCountdown : MonoBehaviour
                 yield return null;
 
             }
+            // After 1 second..
             if (total == 0)
             {
-                countdownOver.Invoke();
+                StartRound.Invoke(); // Start round
                 yield break;
             }
             else
             {
-                image.sprite = countdownSprites[total - 1];
+                image.sprite = countdownSprites[total - 1]; // Change from 3->2->1
                 yield return null;
             }
         }

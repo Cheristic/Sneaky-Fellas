@@ -15,7 +15,6 @@ public class PlayerCameraMovement : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         Instance = this;
-        GetComponent<PixelPerfectCamera>().runInEditMode = true;
     }
 
     void Update()

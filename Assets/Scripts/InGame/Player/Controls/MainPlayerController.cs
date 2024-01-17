@@ -9,8 +9,8 @@ using UnityEngine;
 public class MainPlayerController : MonoBehaviour
 {
     // When sending the player netcode, send its transform and the force applied to the rigidbody.
-    Transform pTransform;
-    Rigidbody2D pRigidbody;
+    Transform playerObjectTransform;
+    Rigidbody2D playerObjectRigidBody;
     private PlayerInputAction inputs;
     private ItemSlotManager itemSlotManager;
     private Interact_InputHandler interactor;
@@ -19,24 +19,30 @@ public class MainPlayerController : MonoBehaviour
     [SerializeField] private float movementSpeed = 30.0f;
     [SerializeField] private float rotateSpeed = 3.0f;
 
-    void Start()
+    public static event Action mainPlayerCreated;
+
+    void Start() // Called on spawn
     {
-        pTransform = PlayerInterface.Main.playerObject.transform;
-        pRigidbody = PlayerInterface.Main.playerObject.GetComponent<Rigidbody2D>();
+        playerObjectTransform = PlayerInterface.Main.playerObject.transform;
+        playerObjectRigidBody = PlayerInterface.Main.playerObject.GetComponent<Rigidbody2D>();
         inputs = new();
-        RoundCountdown.countdownOver += StartRound;
         itemSlotManager = new(ref inputs);
+
+        RoundCountdown.StartRound += OnStartRound;
+        SyncGameData.TransitionToRoundStats.AddListener(OnTransitionToStats);
+
+        mainPlayerCreated?.Invoke();
     }
 
     private Vector2 movementVector = new();
     public static event Action<Vector3> updateFOV;
 
-    private void StartRound()
+    private void OnStartRound()
     {
         inputs.MainPlayer.Enable();
     }
 
-    void OnDisable()
+    void OnTransitionToStats()
     {
         inputs.MainPlayer.Disable();
     }
@@ -52,19 +58,19 @@ public class MainPlayerController : MonoBehaviour
         }
         
         // #### ROTATION ####
-        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(pTransform.position);
+        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(playerObjectTransform.position);
         var targetAngle = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
-        Quaternion currentAngle = pTransform.rotation;
-        pTransform.rotation = Quaternion.Lerp(currentAngle, targetAngle, rotateSpeed * Time.deltaTime);
+        Quaternion currentAngle = playerObjectTransform.rotation;
+        playerObjectTransform.rotation = Quaternion.Lerp(currentAngle, targetAngle, rotateSpeed * Time.deltaTime);
 
-        // Transmit direction to FOVs
-        float finalAngle = pTransform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+        // Transmit direction to Vision Cones
+        float finalAngle = playerObjectTransform.rotation.eulerAngles.z * Mathf.Deg2Rad;
         var finalDir = new Vector3(Mathf.Cos(finalAngle), Mathf.Sin(finalAngle), dir.z);
-        updateFOV.Invoke(finalDir);
+        updateFOV?.Invoke(finalDir);
     }
 
     private void FixedUpdate()
     {
-        pRigidbody.velocity = new Vector2(movementVector.x, movementVector.y).normalized * movementSpeed;
+        playerObjectRigidBody.velocity = new Vector2(movementVector.x, movementVector.y).normalized * movementSpeed;
     }
 }

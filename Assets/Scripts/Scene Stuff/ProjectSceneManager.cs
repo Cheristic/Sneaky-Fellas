@@ -81,9 +81,9 @@ public class ProjectSceneManager : NetworkBehaviour
                     break;
                 case LoadPhase.ToGameScene: // Game is loaded for all clients, now prepare the game
                     currentPhase += 1;
-                    RoundAssembler.TriggerStartFirstRound += GameStarting; // Once game is fully prepped
+                    SyncGameData.TriggerFirstRoundReady.AddListener(GameStarting); // Once game is fully prepped
                     SceneManager.SetActiveScene(SceneManager.GetSceneByName(currMapChoice));
-                    GameInterface.Instance.PrepareGame(); // Cues server to begin assembling game scene
+                    SyncGameData.TriggerBuildFirstRound.Invoke(); // Cues server to begin assembling game scene
                     break;
             }
 
@@ -93,7 +93,7 @@ public class ProjectSceneManager : NetworkBehaviour
     // Called once First Round has finished assembling and is about to start
     private void GameStarting()
     {
-        RoundAssembler.TriggerStartFirstRound -= GameStarting;
+        SyncGameData.TriggerFirstRoundReady.RemoveAllListeners();
         var status = NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneByName("Loading"));
     }
 }

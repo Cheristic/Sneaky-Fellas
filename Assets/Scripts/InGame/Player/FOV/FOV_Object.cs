@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class FOV_Object : NetworkBehaviour
+public class FOV_Object : MonoBehaviour
 {
 
     [SerializeField] private float fov = 90f;
@@ -17,16 +17,12 @@ public class FOV_Object : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!IsOwner) return;
-
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
     }
 
     private void LateUpdate()
     {
-        if (!IsOwner) return;
-
         float angle = startingAngle;
         float angleIncrease = fov / rayCount;
 

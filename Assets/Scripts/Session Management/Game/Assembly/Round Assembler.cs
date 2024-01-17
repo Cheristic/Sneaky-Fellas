@@ -5,59 +5,41 @@ using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Soon as a Round starts, this prepares the game and tells the interface to begin the round.
 /// Once variations come into play, this is what will be responsible for implementing them.
 /// Basically serves as an abstract layer between Game Assembler and RoundData.
 /// </summary>
-public class RoundAssembler : MonoBehaviour
+public class RoundAssembler : NetworkBehaviour
 {
-    private RoundData roundData; // Server/Assembler instance of round data
+    private RoundData roundData; // Local assembler reference of round data
 
     private PlayerSpawner playerSpawner;
     private ItemSpawner itemSpawner;
 
-    /// <summary>
-    /// Causes Loading scene to unload and begins any timer (EVENTUALLY) for round to start.
-    /// </summary>
-    public static event Action TriggerStartFirstRound;
-    public static event Action TriggerStartNewRound;
 
-    private void Start()
+
+    // Called by server module
+    public void Init()
     {
-        playerSpawner = GameInterface.Instance.gameObject.AddComponent<PlayerSpawner>();
-        //itemSpawner = new();
-        FirstRound();
         SyncRoundData.RoundEnd += RoundEnd;
+        playerSpawner = GetComponent<PlayerSpawner>();
+        SyncGameData.TriggerBuildFirstRound.AddListener(FirstRoundAssemble);
     }
 
-    // ############# ROUND STARTERS #############
-    private void FirstRound()
+    // ############# FIRST ROUND STARTS ############# 
+    public void FirstRoundAssemble()
     {
+        //itemSpawner = new();
         roundData = new();
-        playerSpawner.FirstRound(ref roundData.playersSpawned);
-        DistributeRoundData_ClientRpc(roundData); // Distribute server's Round Data
-        TriggerStartFirstRound?.Invoke();
+        playerSpawner.FirstRound(ref roundData);
+        SyncRoundData.Instance.UpdateRoundData(roundData); // Distribute server's Round Data
+        SyncGameData.TriggerFirstRoundReady?.Invoke(); // Only initiated first round, cues the scene manager to unload Loading scene
+        SyncGameData.TriggerNewRoundReady.Invoke(); // Calls RoundCountdown on all clients to begin
     }
 
-    /// <summary>
-    /// Called to begin all subsequent rounds.
-    /// </summary>
-    private void NewRound()
-    {
-        roundData.NewRound();
-        playerSpawner.NewRound(ref roundData);
-        DistributeRoundData_ClientRpc(roundData); // Distribute server's Round Data
-        TriggerStartNewRound?.Invoke();
-    }
-
-    // ############# RPC + HELPER METHODS #############
-    [ClientRpc]
-    private static void DistributeRoundData_ClientRpc(RoundData roundData)
-    {
-        GameInterface.Instance.roundData = roundData;
-    }
 
     private void RoundEnd(ulong winnerClientId) { StartCoroutine(RoundEndTimer(5)); }
 
@@ -71,7 +53,34 @@ public class RoundAssembler : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        NewRound(); 
+        OnTransitionToRoundStats();
         yield break;
+    }
+
+    /// <summary>
+    /// Will show the current round stats (wins, kills, etc) for a few seconds, then transitions to new round builder
+    /// </summary>
+    private void OnTransitionToRoundStats()
+    {
+        SyncGameData.TransitionToRoundStats?.Invoke();
+        // Handle stats (EVENTUALLY)
+        NewRoundAssemble();
+    }
+
+    // ############# SUBSEQUENT ROUND STARTS ############# 
+    private void NewRoundAssemble()
+    {
+        SyncGameData.BuildNewRound.Invoke();
+        roundData.NewRound();
+        playerSpawner.NewRound(ref roundData);
+        SyncRoundData.Instance.UpdateRoundData(roundData); // Distribute server's Round Data
+        SyncGameData.TriggerNewRoundReady.Invoke(); // Calls RoundCountdown on all clients to begin
+    }
+
+
+    public override void OnNetworkDespawn()
+    {
+        SyncRoundData.RoundEnd -= RoundEnd;
+        SyncGameData.TriggerBuildFirstRound.RemoveListener(FirstRoundAssemble);
     }
 }
