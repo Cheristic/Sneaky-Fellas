@@ -9,7 +9,7 @@ public class FOV_Object : MonoBehaviour
     [SerializeField] private float fov = 90f;
     [SerializeField] private int rayCount = 2;
     [SerializeField] float viewDistance = 50f;
-    [SerializeField] private LayerMask layerMask;
+    [SerializeField] private LayerMask ObstacleLayer;
 
     private Vector3 origin;
     private Mesh mesh;
@@ -40,7 +40,7 @@ public class FOV_Object : MonoBehaviour
             float angleRad = angle * Mathf.Deg2Rad;
             Vector3 angleVec = new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
 
-            RaycastHit2D rayHit = Physics2D.Raycast(origin, angleVec, viewDistance, layerMask);
+            RaycastHit2D rayHit = Physics2D.Raycast(origin, angleVec, viewDistance, ObstacleLayer);
             if (rayHit.collider == null)
             {
                 //No hit

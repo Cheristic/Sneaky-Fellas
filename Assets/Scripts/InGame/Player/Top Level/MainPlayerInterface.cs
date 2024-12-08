@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class MainPlayerInterface : NetworkBehaviour
+public class MainPlayerInterface : MonoBehaviour
 {
     [HideInInspector] public PlayerInterface playerInterface;
     // Keep track of all network player scripts here
@@ -11,7 +11,7 @@ public class MainPlayerInterface : NetworkBehaviour
     public FOVManager fovManager;
     public MainPlayerSyncSender mainPlayerSyncSender;
     public MainPlayerController mainPlayerController;
-    public override void OnNetworkSpawn()
+    private void Start()
     {
         playerInterface = GetComponentInParent<PlayerInterface>();
     }

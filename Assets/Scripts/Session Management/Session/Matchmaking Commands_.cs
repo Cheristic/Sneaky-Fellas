@@ -26,7 +26,7 @@ public class MatchmakingCommands : NetworkBehaviour
 
     [SerializeField] private UnityTransport _transport;
 
-    private void Start()
+    private async void Start()
     {
 
         // Make global instance of all matchmaking commands
@@ -45,6 +45,7 @@ public class MatchmakingCommands : NetworkBehaviour
             NetworkManager.Singleton.NetworkConfig.ConnectionApproval = true;
             NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionApprovalCallback;
         }
+        await Login(); // Login right at boot up
     }
 
 
@@ -80,11 +81,9 @@ public class MatchmakingCommands : NetworkBehaviour
 
 
     // #### UNITY LOBBY+RELAY SERVICES ####
-    [SerializeField] private GameEvent_SO onJoinLobby; // TEMPORARY WILL REMOVE LATER PROBABLY (just connected to MM_UIManager to display lobby code)
 
     public async Task<SessionData> CreateNewSession()
     {
-        await Login();
         SessionData newSession = new();
 
         // Start Host
@@ -142,7 +141,6 @@ public class MatchmakingCommands : NetworkBehaviour
 
         StartCoroutine(HandleLobbyHeartBeat(lobby)); // Always active until session ends
         HandleLobbyPoll(lobby);
-        onJoinLobby.Raise(this, lobby);
 
         // Edit player list of session
         newSession.players.Add(new PlayerSessionData(NetworkManager.Singleton.LocalClientId, "Player"));
@@ -153,11 +151,8 @@ public class MatchmakingCommands : NetworkBehaviour
 
     }
 
-    [SerializeField] GameObject sessionDataPrefab;
-
     public async Task<SessionData> JoinSession(string lobbyCode)
     {
-        await Login();
         SessionData session = new();
 
         // Join Lobby
@@ -199,9 +194,21 @@ public class MatchmakingCommands : NetworkBehaviour
 
         // SUCCESS
         StartCoroutine("HandleLobbyPoll", lobby);
-        onJoinLobby.Raise(this, lobby);
 
         return session;
+    }
+
+    public async void LeaveLobby(SessionData data)
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(data.lobbyId, AuthenticationService.Instance.PlayerId);
+            NetworkManager.Singleton.Shutdown();
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
     }
 
     public static event Action<MapChoice> startGameScene; // Subscribed from ProjectSceneManager

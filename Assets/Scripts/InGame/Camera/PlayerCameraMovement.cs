@@ -8,14 +8,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerCameraMovement : NetworkBehaviour
 {
-    public static PlayerCameraMovement Instance { get; private set; }
-
     [HideInInspector] public Transform targetToTrack;
-
-    public override void OnNetworkSpawn()
-    {
-        Instance = this;
-    }
 
     void Update()
     {

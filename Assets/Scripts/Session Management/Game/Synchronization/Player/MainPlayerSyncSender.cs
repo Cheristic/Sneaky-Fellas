@@ -70,4 +70,22 @@ public class MainPlayerSyncSender : MonoBehaviour
             man.SendNamedMessage("RelayMovementMessage", NetworkManager.ServerClientId, writer, NetworkDelivery.Unreliable);
         }
     }
+
+    public void SendDeathMessage(ulong _playerId)
+    {
+        PlayerDiesMessage data = new PlayerDiesMessage
+        {
+            playerId = _playerId,
+            endGame = false
+        };
+        byte[] msg = SerializationCommands.ToBytes(data);
+        var writer = new FastBufferWriter(FastBufferWriter.GetWriteSize(msg), Allocator.Temp);
+        var man = NetworkManager.Singleton.CustomMessagingManager;
+
+        using (writer)
+        {
+            writer.WriteValueSafe(msg);
+            man.SendNamedMessage("RelayPlayerDies", NetworkManager.ServerClientId, writer, NetworkDelivery.Unreliable);
+        }
+    }
 }

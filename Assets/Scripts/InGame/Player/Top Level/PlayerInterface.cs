@@ -17,7 +17,6 @@ public class PlayerInterface : NetworkBehaviour
     public GameObject playerObject;
     [HideInInspector] public GameObject playerAddOn;
 
-    [HideInInspector] public PlayerHealth playerHealth;
     public PlayerSpriteManager playerSprite;
 
     public override void OnNetworkSpawn()

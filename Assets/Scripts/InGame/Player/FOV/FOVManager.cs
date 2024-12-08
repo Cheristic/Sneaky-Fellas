@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Unity.Netcode;
 
-public class FOVManager : NetworkBehaviour
+public class FOVManager : MonoBehaviour
 {
     [SerializeField] private FOV_Object FOV_Cone;
     [SerializeField] private FOV_Object FOV_Circle;
@@ -15,10 +15,6 @@ public class FOVManager : NetworkBehaviour
         MainPlayerController.mainPlayerCreated += OnMainPlayerCreated;
         MainPlayerHealth.mainPlayerDied += UnlinkFOV;
         LinkFOV();
-    }
-
-    public override void OnNetworkSpawn()
-    {
         SyncGameData.TriggerNewRoundReady.AddListener(LinkFOV);
     }
 

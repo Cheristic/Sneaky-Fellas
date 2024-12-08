@@ -3,19 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using static SyncNetworkPlayersDataManager;
 
 /// <summary>
 /// Keeps local instance of player's health and used when Damage events are triggered.
 /// </summary>
 public class MainPlayerHealth : PlayerHealth
 {
+    MainPlayerInterface mainPlayerInterface;
+    private void Start()
+    {
+        SyncGameData.TriggerNewRoundReady.AddListener(NewRound);
+        mainPlayerInterface = GetComponent<MainPlayerInterface>();
+    }
+
+    private void NewRound()
+    {
+        isDead = false;
+    }
+
     private void TakeDamage(int dmg)
     {
 
     }
 
     public static event Action mainPlayerDied;
-    public override void Die()
+    public void Die()
     {
         mainPlayerDied.Invoke();
 
@@ -24,6 +37,9 @@ public class MainPlayerHealth : PlayerHealth
 
         PlayerInterface.Main.playerObject.GetComponent<PolygonCollider2D>().enabled = false;
         isDead = true;
+
+        // Send to server that this player died
+        mainPlayerInterface.mainPlayerSyncSender.SendDeathMessage(mainPlayerInterface.playerInterface.playerId);
     }
 
     void Update()
@@ -33,5 +49,10 @@ public class MainPlayerHealth : PlayerHealth
         {
             Die();
         }
+    }
+
+    private void OnDestroy()
+    {
+        SyncGameData.TriggerNewRoundReady.RemoveListener(NewRound);
     }
 }

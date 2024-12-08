@@ -11,8 +11,8 @@ public class GameUIManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        SyncGameData.BuildNewRound.AddListener(OnBuildNewRound);
-        MainPlayerHealth.mainPlayerDied += OnMainPlayerDied;
+        //SyncGameData.BuildNewRound.AddListener(OnBuildNewRound);
+        //MainPlayerHealth.mainPlayerDied += OnMainPlayerDied;
     }
 
     private void OnMainPlayerDied()

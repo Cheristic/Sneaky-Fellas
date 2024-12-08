@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 /// <summary>
 /// Outermost layer for handling the basic Session inputs received through the Main Menu
@@ -27,22 +29,31 @@ public class SessionInterface : NetworkBehaviour
 
     }
 
-    public async void Host()
+    public async Task<bool> Host()
     {
         currentSession = await MatchmakingCommands.Instance.CreateNewSession();
         if (!String.IsNullOrEmpty(currentSession.errorStatus)) // ERROR HAS OCCURRED
         {
             // Handle error
+            return false;
         }
+        return true;
     }
 
-    public async void JoinPrivate(string lobbyCode)
+    public async Task<bool> JoinPrivate(string lobbyCode)
     {
         currentSession = await MatchmakingCommands.Instance.JoinSession((string)lobbyCode); // return temp session because SyncSessionData will change currentSession
         if (!String.IsNullOrEmpty(currentSession.errorStatus)) // ERROR HAS OCCURRED
         {
             // Handle error
+            return false;
         }
+        return true;
+    }
+
+    public async void LeaveLobby()
+    {
+        await Task.Run(() => MatchmakingCommands.Instance.LeaveLobby(currentSession));
     }
 
     public void StartGame()

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NetworkPlayerHealth : PlayerHealth
 {
-    public override void Die()
+    public void ReceiveDeathMessage(SyncNetworkPlayersDataManager.PlayerDiesMessage msg)
     {
         PlayerInterface i = GetComponentInParent<PlayerInterface>();
         i.playerObject.layer = 13; // PlayerDead

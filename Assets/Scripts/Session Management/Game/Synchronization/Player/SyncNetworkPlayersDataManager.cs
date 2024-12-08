@@ -57,4 +57,13 @@ public class SyncNetworkPlayersDataManager : MonoBehaviour
     }
     // May just create one total network message to reduce network traffic:
     // Includes items held, weapon use, health. Would it be cheaper to send one big message or more smaller messages
+
+
+    // ####### HANDLE DEATH #######
+    [Serializable]
+    public struct PlayerDiesMessage
+    {
+        public ulong playerId;
+        public bool endGame;
+    }
 }

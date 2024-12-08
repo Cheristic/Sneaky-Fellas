@@ -31,7 +31,6 @@ public class PlayerConstructor : NetworkBehaviour
             i.playerSprite.gameObject.layer = LayerMask.NameToLayer("BehindMask");
             i.playerAddOn = Instantiate(NetworkPlayerPrefab, transform); // Give player the NetworkPlayer Module
         }
-        i.playerHealth = i.playerAddOn.GetComponent<PlayerHealth>();
     }
 
     private void OnTriggerNewRoundReady()
@@ -39,7 +38,6 @@ public class PlayerConstructor : NetworkBehaviour
         i.playerObject.transform.position = i.playerSpawnLocation;
         i.playerObject.layer = 11; // Player
         i.playerSprite.gameObject.layer = 11;
-        i.playerHealth.isDead = false;
 
         i.playerObject.GetComponent<PolygonCollider2D>().enabled = true;
     }

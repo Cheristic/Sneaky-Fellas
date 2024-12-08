@@ -12,8 +12,8 @@ public class PlayerCameraTarget : MonoBehaviour
     private void Start()
     {
         // Tells the player camera to start following this target
-        PlayerCameraMovement.Instance.targetToTrack = transform;
-        PlayerCameraMovement.Instance.GetComponent<CinemachineVirtualCamera>().Follow = transform;
+        PlayerCameraInterface.Main.playerCameraMovement.targetToTrack = transform;
+        PlayerCameraInterface.Main.GetComponent<CinemachineVirtualCamera>().Follow = transform;
         player = PlayerInterface.Main.playerObject.transform;
     }
     void Update()
